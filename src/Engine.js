@@ -20,7 +20,7 @@ function Engine(canvasElement)
     
     this.enterStage = function(name) {
         this.exitStage(); // Exit the current stage if any
-        sprites.onLoad(name, function() {
+        sprites.onEnterStage(name, function() {
             currentStage = stages[name];
             currentStage.onEnter();
         });
@@ -201,7 +201,7 @@ function SpritesManager()
 {
     var sprites = {};
     
-    this.onLoad = function(stage, callback) {
+    this.onEnterStage = function(stage, callback) {
         sprites = {};
         var images = stage.images;
         var imagesLoaded = 0;
