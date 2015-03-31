@@ -1,0 +1,16 @@
+canvas#canvas
+{
+   border: 1px dotted #f06;
+   margin-left: 100px;
+}
+
+div#output
+{
+   width: 250px;
+   height: 150px;
+   float: left;
+   overflow-x: hidden;
+   overflow-y: auto;
+   background-color: #000;
+   color: #fff;
+}
