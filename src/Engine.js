@@ -11,7 +11,7 @@ function Engine(canvasElement)
     var context = canvasElement.getContext("2d");
     var mouse = new MouseManager(this);
     var sprites = new SpritesManager();
-    var keyboard = new KeyboardManager(this);
+    this.keyboard = new KeyboardManager(this);
 
     this.createStage = function(name) {
         stages[name] = new Stage();
@@ -219,6 +219,9 @@ function SpritesManager()
         }
     };
 }
+
+
+
 
 function KeyboardManager(engine)
 {
