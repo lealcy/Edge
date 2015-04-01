@@ -19,7 +19,7 @@ function Engine(canvasElement)
     
     this.enterStage = function(name) {
         this.exitStage(); // Exit the current stage if any
-        stages[name].sprites.onEnterStage(name, function() {
+        stages[name].sprites.onEnterStage(function() {
             currentStage = stages[name];
             currentStage.onEnter();
         });
