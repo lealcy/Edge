@@ -10,7 +10,7 @@ function Engine(canvasElement)
     var currentStage = null;
     var context = canvasElement.getContext("2d");
     var mouse = new MouseManager(this);
-    var sprites = new SpritesManager();
+    this.sprites = new SpritesManager();
     this.keyboard = new KeyboardManager(this);
 
     this.createStage = function(name) {
