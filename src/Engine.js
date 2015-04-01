@@ -50,8 +50,25 @@ function Engine(canvasElement)
 
 function Stage()
 {
-    this.images = {};
-    this.keyBindings = [];
+    var images = {};
+    var keyBindings = [];
+
+    this.addImage = function(name, src) {
+        images[name] = src;
+    };
+    
+    this.removeImage = function(name) {
+        delete image[name];
+    };
+    
+    this.setKeyBinding = function(keyCode, fn) {
+        keyBindings[keyCode] = fn;
+    };
+    
+    this.unsetKeyBinding = function(keyCode) {
+        keyBindings[keyCode] = null;
+    };
+    
     this.onEnter = function() {};
     this.onTick = function() {};
     this.onRefresh = function() {};
