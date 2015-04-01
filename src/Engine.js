@@ -10,7 +10,6 @@ function Engine(canvasElement)
     var currentStage = null;
     var context = canvasElement.getContext("2d");
     var mouse = new MouseManager(this);
-    this.sprites = new SpritesManager();
     this.keyboard = new KeyboardManager(this);
 
     this.createStage = function(name) {
@@ -20,7 +19,7 @@ function Engine(canvasElement)
     
     this.enterStage = function(name) {
         this.exitStage(); // Exit the current stage if any
-        sprites.onEnterStage(name, function() {
+        stages[name].sprites.onEnterStage(name, function() {
             currentStage = stages[name];
             currentStage.onEnter();
         });
@@ -52,6 +51,8 @@ function Stage()
 {
     var images = {};
     var keyBindings = [];
+
+    this.sprites = new SpritesManager(images);
 
     this.addImage = function(name, src) {
         images[name] = src;
@@ -214,24 +215,26 @@ function MouseEvent(e)
     this.originY = 0;
 }
 
-function SpritesManager()
+function SpritesManager(images)
 {
     var sprites = {};
+    var loaded = false;
     
-    this.onEnterStage = function(stage, callback) {
-        sprites = {};
-        var images = stage.images;
-        var imagesLoaded = 0;
-        for (var name in images) {
-            if (images.hasOwnProperty(name)) {
-                var img = new Image();
-                sprites[name] = img;
-                img.onload = function(e) {
-                    if (++imagesLoaded == images.length) {
-                        callback();
-                    }
-                };
-                img.src = images[name];
+    this.onEnterStage = function(callback) {
+        if (!loaded) {
+            var imagesLoaded = 0;
+            for (var name in images) {
+                if (images.hasOwnProperty(name)) {
+                    var img = new Image();
+                    sprites[name] = img;
+                    img.onload = function(e) {
+                        if (++imagesLoaded == images.length) {
+                            loaded = true;
+                            callback();
+                        }
+                    };
+                    img.src = images[name];
+                }
             }
         }
     };
