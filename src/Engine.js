@@ -1,36 +1,54 @@
 function Engine(canvasElement)
 {
+	var self = this; 
+
     const TICK_INTERVAL = 1000 / 15;
     const REFRESH_INTERVAL = 1000 / 60;
-    
-    this.canvas = canvasElement;
+
+	self.debug = false;
+    self.canvas = canvasElement;
+    var currentStage = null;
     var tickTimer = setInterval(tick, TICK_INTERVAL);
     var refreshTimer = setInterval(refresh, REFRESH_INTERVAL);
     var stages = {};
-    var currentStage = null;
     var context = canvasElement.getContext("2d");
-    var mouse = new MouseManager(this);
-    this.keyboard = new KeyboardManager(this);
+    var mouse = new MouseManager(self);
+    self.keyboard = new KeyboardManager();
+	
+	self.dmsg = function(msg) {
+		if (self.debug) {
+			console.log(msg);
+		}
+	};
 
-    this.createStage = function(name) {
-        stages[name] = new Stage();
+    self.createStage = function(name) {
+        stages[name] = new Stage(self);
         return stages[name];
     };
     
-    this.enterStage = function(name) {
-        this.exitStage(); // Exit the current stage if any
+    self.enterStage = function(name) {
+        self.exitStage(); // Exit the current stage if any
+		self.keyboard.onEnterStage(self);
         stages[name].sprites.onEnterStage(function() {
             currentStage = stages[name];
             currentStage.onEnter();
         });
     };
     
-    this.exitStage = function() {
+    self.exitStage = function() {
         if (currentStage) {
             currentStage.onExit();
         }
         currentStage = null;
     };
+	
+	self.getContext = function() {
+		return context;
+	};
+	
+	self.getCurrentStage = function() {
+		return currentStage;
+	};
     
     function refresh()
     {
@@ -47,55 +65,59 @@ function Engine(canvasElement)
     }
 }
 
-function Stage()
+function Stage(engine)
 {
+	var self = this;
+	
     var images = {};
-    var keyBindings = [];
+    self.keyBindings = [];
+	self.sprites = new SpritesManager(images);
 
-    this.sprites = new SpritesManager(images);
-
-    this.addImage = function(name, src) {
+    self.addImage = function(name, src) {
         images[name] = src;
     };
     
-    this.removeImage = function(name) {
+    self.removeImage = function(name) {
         delete image[name];
     };
     
-    this.setKeyBinding = function(keyCode, fn) {
-        keyBindings[keyCode] = fn;
+    self.setKeyBinding = function(keyCode, fn) {
+        self.keyBindings[keyCode] = fn;
     };
     
-    this.unsetKeyBinding = function(keyCode) {
-        keyBindings[keyCode] = null;
+    self.unsetKeyBinding = function(keyCode) {
+        self.keyBindings[keyCode] = null;
     };
     
-    this.onEnter = function() {};
-    this.onTick = function() {};
-    this.onRefresh = function() {};
-    this.onExit = function() {};
-    this.onMouseWheelUp = function() {};
-    this.onMouseWheelDown = function() {};
-    this.onMouseLeft = function() {};
-    this.onMouseCenter = function() {};
-    this.onMouseRight = function() {};
-    this.onMouseDrag = function() {};
-    this.onMouseDown = function() {};
+    self.onEnter = function() { engine.dmsg("Stage onEnter event not defined."); };
+    self.onTick = function() { };
+    self.onRefresh = function() { };
+    self.onExit = function() { engine.dmsg("Stage onExit event not defined."); };
+    self.onMouseWheelUp = function() { engine.dmsg("Stage onMouseWheelUp event not defined."); };
+    self.onMouseWheelDown = function() { engine.dmsg("Stage onMouseWhellDown event not defined."); };
+    self.onMouseLeft = function() { engine.dmsg("Stage onMouseLeft event not defined."); };
+    self.onMouseCenter = function() { engine.dmsg("Stage onMouseCenter event not defined."); };
+    self.onMouseRight = function() { engine.dmsg("Stage onMouseRight event not defined."); };
+    self.onMouseDrag = function() { engine.dmsg("Stage onMouseDrag event not defined."); };
+    self.onMouseDown = function() { engine.dmsg("Stage onMouseDown event not defined."); };
+	self.onMouseMove = function() { engine.dmsg("Stage onMouseMove event not defined."); };
 }
 
 function MouseManager(engine)
 {
-    this.NONE = -1;
-    this.LEFT = 0;
-    this.CENTER = 1;
-    this.RIGHT = 2;
-    this.WHEEL_UP = 1;
-    this.WHEEL_DOWN = -1;
-    this.WHEEL_NONE = 0;
-    this.event = null;
+    var self = this;
+	
+	self.NONE = -1;
+    self.LEFT = 0;
+    self.CENTER = 1;
+    self.RIGHT = 2;
+    self.WHEEL_UP = 1;
+    self.WHEEL_DOWN = -1;
+    self.WHEEL_NONE = 0;
+    self.event = null;
     
     var isMouseDown = false;
-    var mouseButtonPressed = this.MOUSE_NONE;
+    var mouseButtonPressed = self.MOUSE_NONE;
     var mouseMoved = false;
     var mouseOldX = 0;
     var mouseOldY = 0;
@@ -123,12 +145,12 @@ function MouseManager(engine)
     
     function onMouseWheel(e)
     {
-        this.event = new MouseEvent(e);
-        if (engine.currentStage) {
-            if (this.event.wheelDirection == this.WHEEL_UP) {
-                engine.currentStage.onMouseWheelUp();
-            } else if (this.event.wheelDirection == this.WHEEL_DOWN) {
-                engine.currentStage.onMouseWheelDown();
+        self.event = new MouseEvent(e);
+        if (engine.getCurrentStage()) {
+            if (self.event.wheelDirection == self.WHEEL_UP) {
+                engine.getCurrentStage().onMouseWheelUp();
+            } else if (self.event.wheelDirection == self.WHEEL_DOWN) {
+                engine.getCurrentStage().onMouseWheelDown();
             }
         }
         return false;
@@ -147,27 +169,27 @@ function MouseManager(engine)
     function onMouseUp(e)
     {
         if (!mouseMoved) {
-            this.event = new MouseEvent(e);
-            this.event.x -= originX;
-            this.event.y -= originY;
-            this.event.button = mouseButtonPressed;
-            if (engine.currentStage) {
+            self.event = new MouseEvent(e);
+            self.event.x -= originX;
+            self.event.y -= originY;
+            self.event.button = mouseButtonPressed;
+            if (engine.getCurrentStage()) {
                 switch (mouseButtonPressed) {
-                    case this.LEFT:
-                        engine.currentStage.onMouseLeft();
+                    case self.LEFT:
+                        engine.getCurrentStage().onMouseLeft();
                         break;
-                    case this.CENTER:
-                        engine.currentStage.onMouseCenter();
+                    case self.CENTER:
+                        engine.getCurrentStage().onMouseCenter();
                         break;
-                    case this.RIGHT:
-                        engine.currentStage.onMouseRight();
+                    case self.RIGHT:
+                        engine.getCurrentStage().onMouseRight();
                         break;
                 }
             }
         }
         mouseMoved = false;
         isMouseDown = false;
-        mouseButtonPressed = this.NONE;
+        mouseButtonPressed = self.NONE;
         return false;
     }
 
@@ -178,26 +200,26 @@ function MouseManager(engine)
     
     function onMouseMove(e)
     {
-        this.event = new MouseEvent(e);
-        mouseMoved = true;
-        if (mouseDown) {
-            originX = this.event.x - mouseOldX;
-            originY = this.event.y - mouseOldY;
-            this.event.originX = originX;
-            this.event.originY = originY;
-            this.event.button = mouseButtonPressed;
+        self.event = new MouseEvent(e);
+        if (isMouseDown) {
+			mouseMoved = true;
+            originX = self.event.x - mouseOldX;
+            originY = self.event.y - mouseOldY;
+            self.event.originX = originX;
+            self.event.originY = originY;
+            self.event.button = mouseButtonPressed;
             if (originX > 0) {
                 originX = 0;
             }
             if (originY > 0) {
                 originY = 0;
             }
-            if (engine.currentStage) {
-                engine.currentStage.onMouseDrag();
+            if (engine.getCurrentStage()) {
+                engine.getCurrentStage().onMouseDrag();
             }
         } else {
-            if (engine.currentStage) {
-                engine.currentStage.onMouseMove();
+            if (engine.getCurrentStage()) {
+                engine.getCurrentStage().onMouseMove();
             }
         }
         return false;
@@ -206,22 +228,29 @@ function MouseManager(engine)
 
 function MouseEvent(e)
 {
-    this.rawEvent = e;
-    this.wheelDirection = e.wheelDelta / 120;
-    this.button = e.button;
-    this.x = e.offsetX === undefined ? e.originalEvent.layerX : e.offsetX;
-    this.y = e.offsetY === undefined ? e.originalEvent.layerY : e.offsetY;
-    this.originX = 0;
-    this.originY = 0;
+	var self = this;
+	
+    self.rawEvent = e;
+    self.wheelDirection = e.wheelDelta / 120;
+    self.button = e.button;
+    self.x = e.offsetX === undefined ? e.originalEvent.layerX : e.offsetX;
+    self.y = e.offsetY === undefined ? e.originalEvent.layerY : e.offsetY;
+    self.originX = 0;
+    self.originY = 0;
 }
 
 function SpritesManager(images)
 {
+	var self = this;
+	
     var sprites = {};
     var loaded = false;
     
-    this.onEnterStage = function(callback) {
-        if (!loaded) {
+    self.onEnterStage = function(callback) {
+		if (!images.length) {
+			loaded = true;
+			callback();
+		} else if (!loaded) {
             var imagesLoaded = 0;
             for (var name in images) {
                 if (images.hasOwnProperty(name)) {
@@ -240,121 +269,130 @@ function SpritesManager(images)
     };
 }
 
-
-
-
-function KeyboardManager(engine)
+function KeyboardManager()
 {
-    this.KEY_BACKSPACE = 8;
-    this.KEY_TAB = 9;
-    this.KEY_ENTER = 13;
-    this.KEY_SHIFT = 16;
-    this.KEY_CTRL = 17;
-    this.KEY_ALT = 18;
-    this.KEY_PAUSE = 19;
-    this.KEY_CAPS_LOCK = 20;
-    this.KEY_ESCAPE = 27;
-    this.KEY_PAGE_UP = 33;
-    this.KEY_PAGE_DOWN = 34;
-    this.KEY_END = 35;
-    this.KEY_HOME = 36;
-    this.KEY_LEFT = 37
-    this.KEY_UP = 38;
-    this.KEY_RIGHT = 39;
-    this.KEY_DOWN = 40;
-    this.KEY_INSERT = 45;
-    this.KEY_DELETE = 46;
-    this.KEY_0 = 48;
-    this.KEY_1 = 49;
-    this.KEY_2 = 50;
-    this.KEY_3 = 51;
-    this.KEY_4 = 52;
-    this.KEY_5 = 53;
-    this.KEY_6 = 54;
-    this.KEY_7 = 55;
-    this.KEY_8 = 56;
-    this.KEY_9 = 57;
-    this.KEY_A = 65;
-    this.KEY_B = 66;
-    this.KEY_C = 67;
-    this.KEY_D = 68;    
-    this.KEY_E = 69;
-    this.KEY_F = 70;
-    this.KEY_G = 71;
-    this.KEY_H = 72;
-    this.KEY_I = 73;
-    this.KEY_J = 74;
-    this.KEY_K = 75;
-    this.KEY_L = 76;
-    this.KEY_M = 77;
-    this.KEY_N = 78;
-    this.KEY_O = 79;
-    this.KEY_P = 80;
-    this.KEY_Q = 81;
-    this.KEY_R = 82;
-    this.KEY_S = 83;
-    this.KEY_T = 84;
-    this.KEY_U = 85;
-    this.KEY_V = 86;
-    this.KEY_W = 87;
-    this.KEY_X = 88;
-    this.KEY_Y = 89;
-    this.KEY_Z = 90;
-    this.KEY_LEFT_WINDOW = 91;
-    this.KEY_RIGHT_WINDOW = 92;
-    this.KEY_SELECT = 93;
-    this.KEY_NUMPAD_0 = 96;
-    this.KEY_NUMPAD_1 = 97;
-    this.KEY_NUMPAD_2 = 98;
-    this.KEY_NUMPAD_3 = 99;
-    this.KEY_NUMPAD_4 = 100;
-    this.KEY_NUMPAD_5 = 101;
-    this.KEY_NUMPAD_6 = 102;
-    this.KEY_NUMPAD_7 = 103;    
-    this.KEY_NUMPAD_8 = 104;
-    this.KEY_NUMPAD_9 = 105;
-    this.KEY_MULTIPLY = 106;
-    this.KEY_ADD = 107;
-    this.KEY_SUBTRACT = 109;
-    this.KEY_DECIMAL_POINT = 110;
-    this.KEY_DIVIDE = 111;
-    this.KEY_F1 = 112;
-    this.KEY_F2 = 113;
-    this.KEY_F3 = 114;
-    this.KEY_F4 = 115;
-    this.KEY_F5 = 116;
-    this.KEY_F6 = 117;
-    this.KEY_F7 = 118;
-    this.KEY_F8 = 119;
-    this.KEY_F9 = 120;
-    this.KEY_F10 = 121;
-    this.KEY_F11 = 122;
-    this.KEY_F12 = 123;
-    this.KEY_NUM_LOCK = 144;
-    this.KEY_SCROLL_LOCK = 145;
-    this.KEY_SEMI_COLON = 186;
-    this.KEY_EQUAL_SIGN = 187;
-    this.KEY_COMMA = 188;
-    this.KEY_DASH = 189;
-    this.KEY_PERIOD = 190;
-    this.KEY_FORWARD_SLASH = 191;
-    this.KEY_GRAVE_ACCENT = 192;
-    this.KEY_OPEN_BRACKET = 219;
-    this.KEY_BACK_SLASH = 220;
-    this.KEY_CLOSE_BRACKET = 221;
-    this.KEY_SINGLE_QUOTE = 222;
+	var self = this;
+	var started = false;
+	var engine = null;
+	
+    self.KEY_BACKSPACE = 8;
+    self.KEY_TAB = 9;
+    self.KEY_ENTER = 13;
+    self.KEY_SHIFT = 16;
+    self.KEY_CTRL = 17;
+    self.KEY_ALT = 18;
+    self.KEY_PAUSE = 19;
+    self.KEY_CAPS_LOCK = 20;
+    self.KEY_ESCAPE = 27;
+    self.KEY_PAGE_UP = 33;
+    self.KEY_PAGE_DOWN = 34;
+    self.KEY_END = 35;
+    self.KEY_HOME = 36;
+    self.KEY_LEFT = 37
+    self.KEY_UP = 38;
+    self.KEY_RIGHT = 39;
+    self.KEY_DOWN = 40;
+    self.KEY_INSERT = 45;
+    self.KEY_DELETE = 46;
+    self.KEY_0 = 48;
+    self.KEY_1 = 49;
+    self.KEY_2 = 50;
+    self.KEY_3 = 51;
+    self.KEY_4 = 52;
+    self.KEY_5 = 53;
+    self.KEY_6 = 54;
+    self.KEY_7 = 55;
+    self.KEY_8 = 56;
+    self.KEY_9 = 57;
+    self.KEY_A = 65;
+    self.KEY_B = 66;
+    self.KEY_C = 67;
+    self.KEY_D = 68;    
+    self.KEY_E = 69;
+    self.KEY_F = 70;
+    self.KEY_G = 71;
+    self.KEY_H = 72;
+    self.KEY_I = 73;
+    self.KEY_J = 74;
+    self.KEY_K = 75;
+    self.KEY_L = 76;
+    self.KEY_M = 77;
+    self.KEY_N = 78;
+    self.KEY_O = 79;
+    self.KEY_P = 80;
+    self.KEY_Q = 81;
+    self.KEY_R = 82;
+    self.KEY_S = 83;
+    self.KEY_T = 84;
+    self.KEY_U = 85;
+    self.KEY_V = 86;
+    self.KEY_W = 87;
+    self.KEY_X = 88;
+    self.KEY_Y = 89;
+    self.KEY_Z = 90;
+    self.KEY_LEFT_WINDOW = 91;
+    self.KEY_RIGHT_WINDOW = 92;
+    self.KEY_SELECT = 93;
+    self.KEY_NUMPAD_0 = 96;
+    self.KEY_NUMPAD_1 = 97;
+    self.KEY_NUMPAD_2 = 98;
+    self.KEY_NUMPAD_3 = 99;
+    self.KEY_NUMPAD_4 = 100;
+    self.KEY_NUMPAD_5 = 101;
+    self.KEY_NUMPAD_6 = 102;
+    self.KEY_NUMPAD_7 = 103;    
+    self.KEY_NUMPAD_8 = 104;
+    self.KEY_NUMPAD_9 = 105;
+    self.KEY_MULTIPLY = 106;
+    self.KEY_ADD = 107;
+    self.KEY_SUBTRACT = 109;
+    self.KEY_DECIMAL_POINT = 110;
+    self.KEY_DIVIDE = 111;
+    self.KEY_F1 = 112;
+    self.KEY_F2 = 113;
+    self.KEY_F3 = 114;
+    self.KEY_F4 = 115;
+    self.KEY_F5 = 116;
+    self.KEY_F6 = 117;
+    self.KEY_F7 = 118;
+    self.KEY_F8 = 119;
+    self.KEY_F9 = 120;
+    self.KEY_F10 = 121;
+    self.KEY_F11 = 122;
+    self.KEY_F12 = 123;
+    self.KEY_NUM_LOCK = 144;
+    self.KEY_SCROLL_LOCK = 145;
+    self.KEY_SEMI_COLON = 186;
+    self.KEY_EQUAL_SIGN = 187;
+    self.KEY_COMMA = 188;
+    self.KEY_DASH = 189;
+    self.KEY_PERIOD = 190;
+    self.KEY_FORWARD_SLASH = 191;
+    self.KEY_GRAVE_ACCENT = 192;
+    self.KEY_OPEN_BRACKET = 219;
+    self.KEY_BACK_SLASH = 220;
+    self.KEY_CLOSE_BRACKET = 221;
+    self.KEY_SINGLE_QUOTE = 222;
     
-    engine.canvas.tabindex = 1; // Force canvas to be a "focusable" object.
-    engine.canvas.style.outline = "none"; // Disable the focus outline.
-    engine.canvas.addEventListener("keydown", onKeyDown, false);
-    
+	self.onEnterStage = function(e) {
+		if (!started) {
+			started = true;
+			engine = e;
+			engine.canvas.tabIndex = 1; // Force canvas to be a "focusable" object.
+			engine.canvas.style.outline = "none"; // Disable the focus outline.
+			engine.canvas.addEventListener("keydown", onKeyDown, false);
+			engine.canvas.focus();
+
+		}
+	};
+	
     function onKeyDown(e)
     {
-        if (engine.currentStage && engine.currentStage.keyBindings[e.keyCode]) {
+        if (engine.getCurrentStage() && engine.getCurrentStage().keyBindings[e.keyCode]) {
             e.preventDefault();
-            engine.currentStage.keyBindings[e.keyCode](e);
+            engine.getCurrentStage().keyBindings[e.keyCode](e);
             return false;
-        }
+        }			
     }
 }
 
