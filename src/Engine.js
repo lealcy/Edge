@@ -1,11 +1,11 @@
 function Engine(canvasElement)
 {
-	var self = this; 
+    var self = this; 
 
     const TICK_INTERVAL = 1000 / 15;
     const REFRESH_INTERVAL = 1000 / 60;
 
-	self.debug = false;
+    self.debug = false;
     self.canvas = canvasElement;
     var currentStage = null;
     var tickTimer = setInterval(tick, TICK_INTERVAL);
@@ -14,12 +14,12 @@ function Engine(canvasElement)
     var context = canvasElement.getContext("2d");
     var mouse = new MouseManager(self);
     self.keyboard = new KeyboardManager();
-	
-	self.dmsg = function(msg) {
-		if (self.debug) {
-			console.log(msg);
-		}
-	};
+    
+    self.dmsg = function(msg) {
+        if (self.debug) {
+            console.log(msg);
+        }
+    };
 
     self.createStage = function(name) {
         stages[name] = new Stage(self);
@@ -28,7 +28,7 @@ function Engine(canvasElement)
     
     self.enterStage = function(name) {
         self.exitStage(); // Exit the current stage if any
-		self.keyboard.onEnterStage(self);
+        self.keyboard.onEnterStage(self);
         stages[name].sprites.onEnterStage(function() {
             currentStage = stages[name];
             currentStage.onEnter();
@@ -41,14 +41,14 @@ function Engine(canvasElement)
         }
         currentStage = null;
     };
-	
-	self.getContext = function() {
-		return context;
-	};
-	
-	self.getCurrentStage = function() {
-		return currentStage;
-	};
+    
+    self.getContext = function() {
+        return context;
+    };
+    
+    self.getCurrentStage = function() {
+        return currentStage;
+    };
     
     function refresh()
     {
@@ -67,11 +67,11 @@ function Engine(canvasElement)
 
 function Stage(engine)
 {
-	var self = this;
-	
+    var self = this;
+    
     var images = {};
     self.keyBindings = [];
-	self.sprites = new SpritesManager(images);
+    self.sprites = new SpritesManager(images);
 
     self.addImage = function(name, src) {
         images[name] = src;
@@ -100,14 +100,14 @@ function Stage(engine)
     self.onMouseRight = function() { engine.dmsg("Stage onMouseRight event not defined."); };
     self.onMouseDrag = function() { engine.dmsg("Stage onMouseDrag event not defined."); };
     self.onMouseDown = function() { engine.dmsg("Stage onMouseDown event not defined."); };
-	self.onMouseMove = function() { engine.dmsg("Stage onMouseMove event not defined."); };
+    self.onMouseMove = function() { engine.dmsg("Stage onMouseMove event not defined."); };
 }
 
 function MouseManager(engine)
 {
     var self = this;
-	
-	self.NONE = -1;
+    
+    self.NONE = -1;
     self.LEFT = 0;
     self.CENTER = 1;
     self.RIGHT = 2;
@@ -202,7 +202,7 @@ function MouseManager(engine)
     {
         self.event = new MouseEvent(e);
         if (isMouseDown) {
-			mouseMoved = true;
+            mouseMoved = true;
             originX = self.event.x - mouseOldX;
             originY = self.event.y - mouseOldY;
             self.event.originX = originX;
@@ -228,8 +228,8 @@ function MouseManager(engine)
 
 function MouseEvent(e)
 {
-	var self = this;
-	
+    var self = this;
+    
     self.rawEvent = e;
     self.wheelDirection = e.wheelDelta / 120;
     self.button = e.button;
@@ -241,16 +241,16 @@ function MouseEvent(e)
 
 function SpritesManager(images)
 {
-	var self = this;
-	
+    var self = this;
+    
     var sprites = {};
     var loaded = false;
     
     self.onEnterStage = function(callback) {
-		if (!images.length) {
-			loaded = true;
-			callback();
-		} else if (!loaded) {
+        if (!images.length) {
+            loaded = true;
+            callback();
+        } else if (!loaded) {
             var imagesLoaded = 0;
             for (var name in images) {
                 if (images.hasOwnProperty(name)) {
@@ -271,10 +271,10 @@ function SpritesManager(images)
 
 function KeyboardManager()
 {
-	var self = this;
-	var started = false;
-	var engine = null;
-	
+    var self = this;
+    var started = false;
+    var engine = null;
+    
     self.KEY_BACKSPACE = 8;
     self.KEY_TAB = 9;
     self.KEY_ENTER = 13;
@@ -374,25 +374,25 @@ function KeyboardManager()
     self.KEY_CLOSE_BRACKET = 221;
     self.KEY_SINGLE_QUOTE = 222;
     
-	self.onEnterStage = function(e) {
-		if (!started) {
-			started = true;
-			engine = e;
-			engine.canvas.tabIndex = 1; // Force canvas to be a "focusable" object.
-			engine.canvas.style.outline = "none"; // Disable the focus outline.
-			engine.canvas.addEventListener("keydown", onKeyDown, false);
-			engine.canvas.focus();
+    self.onEnterStage = function(e) {
+        if (!started) {
+            started = true;
+            engine = e;
+            engine.canvas.tabIndex = 1; // Force canvas to be a "focusable" object.
+            engine.canvas.style.outline = "none"; // Disable the focus outline.
+            engine.canvas.addEventListener("keydown", onKeyDown, false);
+            engine.canvas.focus();
 
-		}
-	};
-	
+        }
+    };
+    
     function onKeyDown(e)
     {
         if (engine.getCurrentStage() && engine.getCurrentStage().keyBindings[e.keyCode]) {
             e.preventDefault();
             engine.getCurrentStage().keyBindings[e.keyCode](e);
             return false;
-        }			
+        }            
     }
 }
 
