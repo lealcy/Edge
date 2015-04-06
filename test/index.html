@@ -1,15 +1,15 @@
 <!doctype html>
 <html lang='en'>
-    <head>
-        <meta charset='UTF-8' />
-        <title>tile engine</title>
-        <link rel='stylesheet' href='style.css' media='all' />
-    </head>
-    <body>
-        <canvas id='canvas' width='640' height='480'></canvas>
-        <script src='../src/Engine.js'></script>
-        <script>
-            var E = new Engine(document.getElementById("canvas"));
+	<head>
+		<meta charset='UTF-8' />
+		<title>tile engine</title>
+		<link rel='stylesheet' href='style.css' media='all' />
+	</head>
+	<body>
+		<canvas id='canvas' width='640' height='480'></canvas>
+		<script src='../src/Engine.js'></script>
+		<script>
+			var E = new Engine(document.getElementById("canvas"));
 			E.debug = true;
 			var mainStage = E.createStage("main");
 			mainStage.x = 10;
@@ -32,6 +32,6 @@
 				mainStage.y += 3;
 			});
 			E.enterStage("main");
-        </script>
-    </body>
+		</script>
+	</body>
 </html>
