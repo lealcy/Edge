@@ -1,0 +1,37 @@
+function Stage()
+{
+    var self = this;
+
+    self.images = {};
+    self.keys = [];
+
+    self.onEnter = function() { };
+    self.onTick = function() { };
+    self.onRefresh = function() { };
+    self.onExit = function() { };
+    self.onMouseWheelUp = function() { };
+    self.onMouseWheelDown = function() { };
+    self.onMouseLeft = function() { };
+    self.onMouseCenter = function() { };
+    self.onMouseRight = function() { };
+    self.onMouseDrag = function() { };
+    self.onMouseDown = function() { };
+    self.onMouseMove = function() { };
+    
+    self.enter = function(game) {
+        if (typeof Sprites !== "undefined" && images.length) {
+            self.sprites = new Sprites();
+            self.sprites.init(images, function() {
+                self.onEnter();
+            });
+        } else {
+            self.onEnter();
+        }
+    };
+    
+    self.exit = function() {
+        if (self.sprites) {
+            delete self.sprites;
+        }
+    };
+}
