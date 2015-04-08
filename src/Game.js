@@ -1,15 +1,15 @@
 function Game(canvasElement)
 {
-    var self = this; 
+    var self = this;
 
     const TICK_INTERVAL = 1000 / 15;
     const REFRESH_INTERVAL = 1000 / 60;
 
+    var running = false;
+    
     self.canvas = canvasElement;
     self.context = canvasElement.getContext("2d"); // temporary
     self.currentStage = null;
-    var tickTimer = setInterval(tick, TICK_INTERVAL);
-    var refreshTimer = setInterval(refresh, REFRESH_INTERVAL);
     /*if (typeof Mouse !== "undefined") {
         self.mouse = new Mouse(); // temporary
     }
@@ -21,10 +21,14 @@ function Game(canvasElement)
         self.exitStage(); // Exit the current stage if any
         // self.keyboard.onEnterStage(self); // temporary
         self.currentStage = stage;
+        running = true;
+        setTimeout(tick, TICK_INTERVAL);
+        setTimeout(refresh, REFRESH_INTERVAL);
         stage.enter();
     };
     
     self.exitStage = function() {
+        running = false;
         if (self.currentStage) {
             self.currentStage.exit();
         }
@@ -34,14 +38,20 @@ function Game(canvasElement)
     function refresh()
     {
         if (self.currentStage) {
-            self.currentStage.onRefresh();
+            self.currentStage.refresh();
+        }
+        if (running) {
+            setTimeout(refresh, REFRESH_INTERVAL);
         }
     }
     
     function tick()
     {
         if (self.currentStage) {
-            self.currentStage.onTick();
+            self.currentStage.tick();
+        }
+        if (running) {
+            setTimeout(tick, TICK_INTERVAL);
         }
     }
 }

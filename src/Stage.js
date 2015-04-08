@@ -34,4 +34,12 @@ function Stage()
             delete self.sprites;
         }
     };
+    
+    self.tick = function() {
+        self.onTick();
+    };
+    
+    self.refresh() = function() {
+        self.onRefresh();
+    };
 }
