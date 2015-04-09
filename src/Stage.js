@@ -1,5 +1,6 @@
-function Stage()
-{
+var Game = Game || {};
+
+Game.Stage = function() {
     var self = this;
 
     self.images = {};
@@ -19,8 +20,8 @@ function Stage()
     self.onMouseMove = function() { };
     
     self.enter = function(game) {
-        if (typeof Sprites !== "undefined" && images.length) {
-            self.sprites = new Sprites();
+        if (typeof Game.Sprites !== "undefined" && images.length) {
+            self.sprites = new Game.Sprites();
             self.sprites.init(images, function() {
                 self.onEnter();
             });
@@ -39,7 +40,7 @@ function Stage()
         self.onTick();
     };
     
-    self.refresh() = function() {
+    self.refresh = function() {
         self.onRefresh();
     };
-}
+};

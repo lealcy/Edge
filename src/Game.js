@@ -1,5 +1,6 @@
-function Game(canvasElement)
-{
+var Game = Game || {};
+
+Game.Game = function(canvasElement) {
     var self = this;
 
     const TICK_INTERVAL = 1000 / 15;
@@ -54,6 +55,6 @@ function Game(canvasElement)
             setTimeout(tick, TICK_INTERVAL);
         }
     }
-}
+};
 
 

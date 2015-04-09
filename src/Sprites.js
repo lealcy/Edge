@@ -1,5 +1,6 @@
-function Sprites()
-{
+var Game = Game || {};
+
+Game.Sprites = function(){
     var self = this;
     
     var sprites = {};
@@ -23,4 +24,4 @@ function Sprites()
             }
         }
     };
-}
+};

@@ -1,5 +1,6 @@
-function MouseEvent(e)
-{
+var Game = Game || {};
+
+Game.MouseEvent = function(e) {
     var self = this;
     
     self.rawEvent = e;
@@ -9,23 +10,15 @@ function MouseEvent(e)
     self.y = e.offsetY === undefined ? e.originalEvent.layerY : e.offsetY;
     self.originX = 0;
     self.originY = 0;
-}
+};
 
-function Mouse(engine)
-{
+Game.Mouse = function(engine) {
     var self = this;
-    
-    self.NONE = -1;
-    self.LEFT = 0;
-    self.CENTER = 1;
-    self.RIGHT = 2;
-    self.WHEEL_UP = 1;
-    self.WHEEL_DOWN = -1;
-    self.WHEEL_NONE = 0;
+
     self.event = null;
     
     var isMouseDown = false;
-    var mouseButtonPressed = self.MOUSE_NONE;
+    var mouseButtonPressed = Game.MOUSE_NONE;
     var mouseMoved = false;
     var mouseOldX = 0;
     var mouseOldY = 0;
@@ -55,9 +48,9 @@ function Mouse(engine)
     {
         self.event = new MouseEvent(e);
         if (engine.getCurrentStage()) {
-            if (self.event.wheelDirection == self.WHEEL_UP) {
+            if (self.event.wheelDirection == Game.MOUSE_WHEEL_UP) {
                 engine.getCurrentStage().onMouseWheelUp();
-            } else if (self.event.wheelDirection == self.WHEEL_DOWN) {
+            } else if (self.event.wheelDirection == GAME.MOUSE_WHEEL_DOWN) {
                 engine.getCurrentStage().onMouseWheelDown();
             }
         }
@@ -77,19 +70,19 @@ function Mouse(engine)
     function onMouseUp(e)
     {
         if (!mouseMoved) {
-            self.event = new MouseEvent(e);
+            self.event = new Game.MouseEvent(e);
             self.event.x -= originX;
             self.event.y -= originY;
             self.event.button = mouseButtonPressed;
             if (engine.getCurrentStage()) {
                 switch (mouseButtonPressed) {
-                    case self.LEFT:
+                    case Game.MOUSE_LEFT:
                         engine.getCurrentStage().onMouseLeft();
                         break;
-                    case self.CENTER:
+                    case Game.MOUSE_CENTER:
                         engine.getCurrentStage().onMouseCenter();
                         break;
-                    case self.RIGHT:
+                    case Game.MOUSE_RIGHT:
                         engine.getCurrentStage().onMouseRight();
                         break;
                 }
@@ -97,7 +90,7 @@ function Mouse(engine)
         }
         mouseMoved = false;
         isMouseDown = false;
-        mouseButtonPressed = self.NONE;
+        mouseButtonPressed = Game.MOUSE_NONE;
         return false;
     }
 
@@ -108,7 +101,7 @@ function Mouse(engine)
     
     function onMouseMove(e)
     {
-        self.event = new MouseEvent(e);
+        self.event = new Game.MouseEvent(e);
         if (isMouseDown) {
             mouseMoved = true;
             originX = self.event.x - mouseOldX;
@@ -132,4 +125,13 @@ function Mouse(engine)
         }
         return false;
     }
-}
+};
+
+Game.MOUSE_NONE = -1;
+Game.MOUSE_LEFT = 0;
+Game.MOUSE_CENTER = 1;
+Game.MOUSE_RIGHT = 2;
+Game.MOUSE_WHEEL_UP = 1;
+Game.MOUSE_WHEEL_DOWN = -1;
+Game.MOUSE_WHEEL_NONE = 0;
+
