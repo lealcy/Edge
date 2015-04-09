@@ -12,10 +12,8 @@ Game.MouseEvent = function(e) {
     self.originY = 0;
 };
 
-Game.Mouse = function(engine) {
+Game.Mouse = function(game) {
     var self = this;
-
-    self.event = null;
     
     var isMouseDown = false;
     var mouseButtonPressed = Game.MOUSE_NONE;
@@ -25,12 +23,13 @@ Game.Mouse = function(engine) {
     var originX = 0;
     var originY = 0;
     
-    engine.canvas.onmousedown = onMouseDown;
-    engine.canvas.onmouseup = onMouseUp;
-    engine.canvas.onmousemove = onMouseMove;
-    engine.canvas.onmousewheel = onMouseWheel;
-    engine.canvas.onmouseout = onMouseOut;
-    engine.canvas.oncontextmenu = function() { return false; };
+    game.canvas.onmousedown = onMouseDown;
+    game.canvas.onmouseup = onMouseUp;
+    game.canvas.onmousemove = onMouseMove;
+    game.canvas.onmousewheel = onMouseWheel;
+    game.canvas.onmouseout = onMouseOut;
+    game.canvas.oncontextmenu = function() { return false; };
+    
     
     function translateEventX(e) 
     {
@@ -46,13 +45,12 @@ Game.Mouse = function(engine) {
     
     function onMouseWheel(e)
     {
-        self.event = new MouseEvent(e);
-        if (engine.getCurrentStage()) {
-            if (self.event.wheelDirection == Game.MOUSE_WHEEL_UP) {
-                engine.getCurrentStage().onMouseWheelUp();
-            } else if (self.event.wheelDirection == GAME.MOUSE_WHEEL_DOWN) {
-                engine.getCurrentStage().onMouseWheelDown();
-            }
+        var event = new Game.MouseEvent(e);
+        game.sendEvent("mouseWheel", event);
+        if (event.wheelDirection == Game.MOUSE_WHEEL_UP) {
+            game.sendEvent("mouseWheelUp", event);
+        } else if (event.wheelDirection == Game.MOUSE_WHEEL_DOWN) {
+            game.sendEvent("mouseWheelDown", event);
         }
         return false;
     }
@@ -70,22 +68,21 @@ Game.Mouse = function(engine) {
     function onMouseUp(e)
     {
         if (!mouseMoved) {
-            self.event = new Game.MouseEvent(e);
-            self.event.x -= originX;
-            self.event.y -= originY;
-            self.event.button = mouseButtonPressed;
-            if (engine.getCurrentStage()) {
-                switch (mouseButtonPressed) {
-                    case Game.MOUSE_LEFT:
-                        engine.getCurrentStage().onMouseLeft();
-                        break;
-                    case Game.MOUSE_CENTER:
-                        engine.getCurrentStage().onMouseCenter();
-                        break;
-                    case Game.MOUSE_RIGHT:
-                        engine.getCurrentStage().onMouseRight();
-                        break;
-                }
+            var event = new Game.MouseEvent(e);
+            event.x -= originX;
+            event.y -= originY;
+            event.button = mouseButtonPressed;
+            game.sendEvent("mouseClick", event);
+            switch (mouseButtonPressed) {
+                case Game.MOUSE_LEFT:
+                    game.sendEvent("mouseLeftClick", event);
+                    break;
+                case Game.MOUSE_CENTER:
+                    game.sendEvent("mouseCenterClick", event);
+                    break;
+                case Game.MOUSE_RIGHT:
+                    game.sendEvent("mouseRightClick", event);
+                    break;
             }
         }
         mouseMoved = false;
@@ -101,7 +98,7 @@ Game.Mouse = function(engine) {
     
     function onMouseMove(e)
     {
-        self.event = new Game.MouseEvent(e);
+        var event = new Game.MouseEvent(e);
         if (isMouseDown) {
             mouseMoved = true;
             originX = self.event.x - mouseOldX;
@@ -115,13 +112,9 @@ Game.Mouse = function(engine) {
             if (originY > 0) {
                 originY = 0;
             }
-            if (engine.getCurrentStage()) {
-                engine.getCurrentStage().onMouseDrag();
-            }
+            game.sendEvent("mouseDrag", event);
         } else {
-            if (engine.getCurrentStage()) {
-                engine.getCurrentStage().onMouseMove();
-            }
+            game.sendEvent("mouseMove", event);
         }
         return false;
     }
@@ -134,4 +127,3 @@ Game.MOUSE_RIGHT = 2;
 Game.MOUSE_WHEEL_UP = 1;
 Game.MOUSE_WHEEL_DOWN = -1;
 Game.MOUSE_WHEEL_NONE = 0;
-

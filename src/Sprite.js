@@ -1,5 +1,6 @@
 var Game = Game || {};
 
-Game.Stage = function() {
+Game.Sprite = function(){
     var self = this;
+    
 };

@@ -1,19 +1,19 @@
 var Game = Game || {};
 
-Game.Sprites = function(){
+Game.Images = function(){
     var self = this;
     
-    var sprites = {};
+    var loadedImages = {};
+    var imagesLoaded = 0;
 
     self.init = function(images, callback) {
-        if (!images.length) {
+        if (!images.length || imagesLoaded) {
             callback();
         } else {
-            var imagesLoaded = 0;
             for (var name in images) {
                 if (images.hasOwnProperty(name)) {
                     var img = new Image();
-                    sprites[name] = img;
+                    loadedImages[name] = img;
                     img.onload = function(e) {
                         if (++imagesLoaded == images.length) {
                             callback();
@@ -22,6 +22,12 @@ Game.Sprites = function(){
                     img.src = images[name];
                 }
             }
+        }
+    };
+    
+    self.get = function(name) {
+        if (loadedImages.hasOwnProperty(name)) {
+            return loadedImages[name];
         }
     };
 };

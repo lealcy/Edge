@@ -7,17 +7,17 @@
     <body>
         <canvas id='canvas' width='640' height='480'></canvas>
         <script src='../src/Game.js'></script>
-        <script src='../src/Stage.js'></script>
+        <script src='../src/Events.js'></script>
+        <script src='../src/Images.js'></script>
+        <script src='../src/Mouse.js'></script>
         <script>
-            var game = new Game.Game(document.querySelector("#canvas"));
-            var stage = new Game.Stage();
-            
-            stage.onRefresh = function() {
+            var images = {};
+            var game = new Game.Game(document.querySelector("#canvas"), images);
+            game.receiveEvent("refresh", function() {
                 game.context.clearRect(0, 0, game.canvas.width, game.canvas.height);
                 game.context.fillRect(0, 0, 10, 10);
-            };
-            
-            game.enterStage(stage);
+            });
+            game.start();
         </script>
     </body>
 </html>

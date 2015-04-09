@@ -1,60 +1,67 @@
 var Game = Game || {};
 
-Game.Game = function(canvasElement) {
+Game.Game = function(canvasElement, imageList) {
     var self = this;
 
-    const TICK_INTERVAL = 1000 / 15;
-    const REFRESH_INTERVAL = 1000 / 60;
-
-    var running = false;
-    
     self.canvas = canvasElement;
     self.context = canvasElement.getContext("2d"); // temporary
-    self.currentStage = null;
-    /*if (typeof Mouse !== "undefined") {
-        self.mouse = new Mouse(); // temporary
+
+    var tickInterval = 1000 / 15;
+    var refreshInterval = 1000 / 60;
+    var running = false;
+    var eventReceivers = {};
+
+    if (typeof Mouse !== "undefined") {
+        var mouse = new Mouse(self);
     }
-    if (typeof Keyboard !== "undefined") { 
+    /*if (typeof Keyboard !== "undefined") { 
         self.keyboard = new Keyboard(); // temporary
     }*/
     
-    self.enterStage = function(stage) {
-        self.exitStage(); // Exit the current stage if any
-        // self.keyboard.onEnterStage(self); // temporary
-        self.currentStage = stage;
-        running = true;
-        setTimeout(tick, TICK_INTERVAL);
-        setTimeout(refresh, REFRESH_INTERVAL);
-        stage.enter();
-    };
-    
-    self.exitStage = function() {
-        running = false;
-        if (self.currentStage) {
-            self.currentStage.exit();
-        }
-        self.currentStage = null;
+    self.images = new Game.Images(imageList);
+
+    self.start = function() {
+        self.images.init(imageList, function() {
+            running = true;
+            setTimeout(tick, tickInterval);
+            setTimeout(refresh, refreshInterval);
+            self.sendEvent("start");
+        });
     };
 
+    self.receiveEvent = function(eventName, callback) {
+        if (!eventReceivers.hasOwnProperty(eventName)) {
+            eventReceivers[eventName] = [];
+        }
+        eventReceivers[eventName].push(callback);
+    };
+    
+    self.sendEvent = function(eventName, eventObj) {
+        if (eventReceivers.hasOwnProperty(eventName)) {
+            for (var i = 0, len = eventReceivers[eventName].length; i < len; i++) {
+                eventReceivers[eventName][i](eventObj);
+            }
+            
+        }
+    };
+    
     function refresh()
     {
-        if (self.currentStage) {
-            self.currentStage.refresh();
-        }
+        self.sendEvent("refresh");
         if (running) {
-            setTimeout(refresh, REFRESH_INTERVAL);
+            setTimeout(refresh, refreshInterval);
         }
     }
     
     function tick()
     {
-        if (self.currentStage) {
-            self.currentStage.tick();
-        }
+        self.sendEvent("tick");
         if (running) {
-            setTimeout(tick, TICK_INTERVAL);
+            setTimeout(tick, tickInterval);
         }
     }
+    
+    
 };
 
 
