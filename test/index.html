@@ -13,10 +13,20 @@
         <script>
             var images = {};
             var game = new Game.Game(document.querySelector("#canvas"), images);
+            
+            var x = 10;
+            var y = 10;
+            
             game.receiveEvent("refresh", function() {
                 game.context.clearRect(0, 0, game.canvas.width, game.canvas.height);
-                game.context.fillRect(0, 0, 10, 10);
+                game.context.fillRect(x, y, 10, 10);
             });
+            
+            game.receiveEvent("mouseDrag", function(e) {
+                x = e.x;
+                y = e.y;
+            });
+            
             game.start();
         </script>
     </body>

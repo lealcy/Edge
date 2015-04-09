@@ -1,30 +1,17 @@
 var Game = Game || {};
 
-Game.Keyboard = function() {
+Game.Keyboard = function(game) {
     var self = this;
-    var started = false;
-    var engine = null;
-    
-    self.onEnterStage = function(e) {
-        if (!started) {
-            started = true;
-            engine = e;
-            engine.canvas.tabIndex = 1; // Force canvas to be a "focusable" object.
-            engine.canvas.style.outline = "none"; // Disable the focus outline.
-            engine.canvas.addEventListener("keydown", onKeyDown, false);
-            engine.canvas.focus();
-        }
-    };
+     
+    game.canvas.tabIndex = 1; // Force canvas to be a "focusable" object.
+    game.canvas.style.outline = "none"; // Disable the focus outline.
+    game.canvas.addEventListener("keydown", onKeyDown, false);
+    game.canvas.focus();
     
     function onKeyDown(e)
     {
-        if (engine.getCurrentStage() && engine.getCurrentStage().keyBindings[e.keyCode]) {
-            e.preventDefault();
-            engine.getCurrentStage().keyBindings[e.keyCode](e);
-            return false;
-        } else {
-            engine.dmsg("KeyEvent not bound: " + e.keycode);
-        }            
+        e.preventDefault();
+        return game.sendEvent("keyDown", e);
     }
 };
 

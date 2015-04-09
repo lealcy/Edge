@@ -11,8 +11,8 @@ Game.Game = function(canvasElement, imageList) {
     var running = false;
     var eventReceivers = {};
 
-    if (typeof Mouse !== "undefined") {
-        var mouse = new Mouse(self);
+    if (typeof Game.Mouse !== "undefined") {
+        var mouse = new Game.Mouse(self);
     }
     /*if (typeof Keyboard !== "undefined") { 
         self.keyboard = new Keyboard(); // temporary
@@ -41,8 +41,9 @@ Game.Game = function(canvasElement, imageList) {
             for (var i = 0, len = eventReceivers[eventName].length; i < len; i++) {
                 eventReceivers[eventName][i](eventObj);
             }
-            
+            return true;
         }
+        return false;
     };
     
     function refresh()

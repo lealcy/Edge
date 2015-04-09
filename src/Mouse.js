@@ -101,17 +101,18 @@ Game.Mouse = function(game) {
         var event = new Game.MouseEvent(e);
         if (isMouseDown) {
             mouseMoved = true;
-            originX = self.event.x - mouseOldX;
-            originY = self.event.y - mouseOldY;
-            self.event.originX = originX;
-            self.event.originY = originY;
-            self.event.button = mouseButtonPressed;
+            originX = event.x - mouseOldX;
+            originY = event.y - mouseOldY;
+            event.originX = originX;
+            event.originY = originY;
+            event.button = mouseButtonPressed;
             if (originX > 0) {
                 originX = 0;
             }
             if (originY > 0) {
                 originY = 0;
             }
+            console.log(event);
             game.sendEvent("mouseDrag", event);
         } else {
             game.sendEvent("mouseMove", event);
