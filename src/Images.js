@@ -8,7 +8,7 @@ Game.Images = function(game, images){
 
 
     if (!images.length || imagesLoaded) {
-        game.event(self, "imagesLoaded", imagesLoaded);
+        game.event("imagesLoaded", imagesLoaded);
     } else {
         for (var name in images) {
             if (images.hasOwnProperty(name)) {
@@ -16,7 +16,7 @@ Game.Images = function(game, images){
                 loadedImages[name] = img;
                 img.onload = function(e) {
                     if (++imagesLoaded == images.length) {
-                        game.event(self, "imagesLoaded", imagesLoaded);
+                        game.event("imagesLoaded", imagesLoaded);
                     }
                 };
                 img.src = images[name];

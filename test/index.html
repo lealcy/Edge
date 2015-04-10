@@ -16,35 +16,48 @@
             var game = new Game.Game(document.querySelector("#canvas"), images);
             var actor = new Game.Actor(game);
             
-            actor.oldX = actor.x;
-            actor.oldY = actor.y;
-
+            actor.expectedX = actor.x;
+            actor.expectedY = actor.y;
+            actor.movementSpeed = 30;
+            
+            actor.on("tick", function(self) {
+                if (self.expectedX > self.x) {
+                    self.x -= (self.x - self.expectedX) / 2;
+                }
+                if (self.expectedY > self.y) {
+                    self.y += (self.expectedY - self.y) / 2
+                }
+                if (self.expectedX < self.x) {
+                    self.x += (self.expectedX - self.x) / 2
+                }
+                if (self.expectedY < self.y) {
+                    self.y -= (self.y - self.expectedY) / 2;
+                }
+            });
+            
             actor.on("refresh", function(self) { 
-                game.context.clearRect(self.oldX, self.oldY, self.width, self.height);
                 game.context.fillRect(self.x, self.y, self.width, self.height); 
             });
             
             actor.on("keyDown" + Game.KEY_UP, function(self) { 
-                self.oldY = self.y;
-                self.y--; 
+                self.expectedY -= self.movementSpeed; 
             });
+
             actor.on("keyDown" + Game.KEY_RIGHT, function(self) { 
-                self.oldX = self.x;
-                self.x++; 
+                self.expectedX += self.movementSpeed; 
             });
+
             actor.on("keyDown" + Game.KEY_DOWN, function(self) { 
-                self.oldY = self.y;
-                self.y++; 
+                self.expectedY += self.movementSpeed; 
             });
+
             actor.on("keyDown" + Game.KEY_LEFT, function(self) { 
-                self.oldX = self.x;
-                self.x--; 
+                self.expectedX -= self.movementSpeed; 
             });
+
             actor.on("mouseDrag", function(self, e) {
-                self.oldX = self.x;
-                self.oldY = self.y
-                self.x = e.x;
-                self.y = e.y;
+                self.expectedX = self.x = e.x - self.width / 2;
+                self.expectedY = self.y = e.y - self.height / 2;
             });
             
             game.start();

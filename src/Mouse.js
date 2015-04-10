@@ -46,11 +46,11 @@ Game.Mouse = function(game) {
     function onMouseWheel(e)
     {
         var event = new Game.MouseEvent(e);
-        game.event(self, "mouseWheel", event);
+        game.event("mouseWheel", event);
         if (event.wheelDirection == Game.MOUSE_WHEEL_UP) {
-            game.event(self, "mouseWheelUp", event);
+            game.event("mouseWheelUp", event);
         } else if (event.wheelDirection == Game.MOUSE_WHEEL_DOWN) {
-            game.event(self, "mouseWheelDown", event);
+            game.event("mouseWheelDown", event);
         }
         return false;
     }
@@ -72,16 +72,16 @@ Game.Mouse = function(game) {
             event.x -= originX;
             event.y -= originY;
             event.button = mouseButtonPressed;
-            game.event(self, "mouseClick", event);
+            game.event("mouseClick", event);
             switch (mouseButtonPressed) {
                 case Game.MOUSE_LEFT:
-                    game.event(self, "mouseLeftClick", event);
+                    game.event("mouseLeftClick", event);
                     break;
                 case Game.MOUSE_CENTER:
-                    game.event(self, "mouseCenterClick", event);
+                    game.event("mouseCenterClick", event);
                     break;
                 case Game.MOUSE_RIGHT:
-                    game.event(self, "mouseRightClick", event);
+                    game.event("mouseRightClick", event);
                     break;
             }
         }
@@ -112,9 +112,9 @@ Game.Mouse = function(game) {
             if (originY > 0) {
                 originY = 0;
             }
-            game.event(self, "mouseDrag", event);
+            game.event("mouseDrag", event);
         } else {
-            game.event(self, "mouseMove", event);
+            game.event("mouseMove", event);
         }
         return false;
     }

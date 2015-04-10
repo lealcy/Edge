@@ -23,13 +23,13 @@ Game.Game = function(canvasElement, imageList) {
 
     self.start = function() {
         if (imageList.length && typeof Game.Images !== "undefined") {
-            self.on(self, "imagesLoaded", function() { start(); });
+            self.on("imagesLoaded", function() { start(); });
         } else {
             start();
         }
     };
 
-    self.on = function(receiver, eventName, callback) {
+    self.on = function(eventName, callback, receiver) {
         if (!eventReceivers.hasOwnProperty(eventName)) {
             eventReceivers[eventName] = [];
         }
@@ -39,10 +39,10 @@ Game.Game = function(canvasElement, imageList) {
         });
     };
     
-    self.event = function(sender, eventName, eventObj) {
+    self.event = function(eventName, eventObj, sender) {
         if (eventReceivers.hasOwnProperty(eventName)) {
             for (var i = 0, len = eventReceivers[eventName].length; i < len; i++) {
-                eventReceivers[eventName][i].callback(sender, eventObj);
+                eventReceivers[eventName][i].callback(eventObj, sender);
             }
             return true;
         }
@@ -60,7 +60,8 @@ Game.Game = function(canvasElement, imageList) {
     
     function refresh()
     {
-        self.event(self, "refresh");
+        self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
+        self.event("refresh");
         if (running) {
             setTimeout(refresh, refreshInterval);
         }
@@ -68,13 +69,11 @@ Game.Game = function(canvasElement, imageList) {
     
     function tick()
     {
-        self.event(self, "tick");
+        self.event("tick");
         if (running) {
             setTimeout(tick, tickInterval);
         }
     }
-    
-    
 };
 
 

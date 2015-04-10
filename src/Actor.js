@@ -9,9 +9,9 @@ Game.Actor = function(game) {
     self.height = game.canvas.height / 20;
     
     self.on = function(eventName, callback) {
-        game.on(self, eventName, function(sender, eventObj) {
+        game.on(eventName, function(eventObj, sender) {
             callback(self, eventObj, sender);
-        });
+        }, self);
     };
     
     
