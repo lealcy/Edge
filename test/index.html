@@ -7,7 +7,6 @@
     <body>
         <canvas id='canvas' width='640' height='480'></canvas>
         <script src='../src/Game.js'></script>
-        <script src='../src/Events.js'></script>
         <script src='../src/Images.js'></script>
         <script src='../src/Mouse.js'></script>
         <script src='../src/Keyboard.js'></script>
@@ -25,8 +24,6 @@
                 game.context.fillRect(self.x, self.y, self.width, self.height); 
             });
             
-            // Clear the old box position.
-            actor.on("keyDown", function(self) {  });
             actor.on("keyDown" + Game.KEY_UP, function(self) { 
                 self.oldY = self.y;
                 self.y--; 
