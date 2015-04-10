@@ -11,7 +11,7 @@ Game.Keyboard = function(game) {
     function onKeyDown(e)
     {
         e.preventDefault();
-        return game.sendEvent("keyDown", e);
+        return game.event(self, "keyDown", e);
     }
 };
 

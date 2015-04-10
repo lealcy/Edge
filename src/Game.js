@@ -18,37 +18,52 @@ Game.Game = function(canvasElement, imageList) {
         self.keyboard = new Keyboard(); // temporary
     }*/
     
-    self.images = new Game.Images(imageList);
+    if (imageList.length && typeof Game.Images !== "undefined") {
+        self.images = new Game.Images(self, imageList);
+    }
 
     self.start = function() {
-        self.images.init(imageList, function() {
-            running = true;
-            setTimeout(tick, tickInterval);
-            setTimeout(refresh, refreshInterval);
-            self.sendEvent("start");
-        });
+        if (imageList.length && typeof Game.Images !== "undefined") {
+            self.on(self, "imagesLoaded", function() {
+                start();
+            });
+        } else {
+            start();
+        }
     };
 
-    self.receiveEvent = function(eventName, callback) {
+    self.on = function(receiver, eventName, callback) {
         if (!eventReceivers.hasOwnProperty(eventName)) {
             eventReceivers[eventName] = [];
         }
-        eventReceivers[eventName].push(callback);
+        eventReceivers[eventName].push({
+            receiver: receiver, 
+            callback: callback,
+        });
     };
     
-    self.sendEvent = function(eventName, eventObj) {
+    self.event = function(sender, eventName, eventObj) {
         if (eventReceivers.hasOwnProperty(eventName)) {
             for (var i = 0, len = eventReceivers[eventName].length; i < len; i++) {
-                eventReceivers[eventName][i](eventObj);
+                eventReceivers[eventName][i].callback(sender, eventObj);
             }
             return true;
         }
         return false;
     };
     
+    function start()
+    {
+        running = true;
+        setTimeout(tick, tickInterval);
+        setTimeout(refresh, refreshInterval);
+        self.event(self, "start");
+
+    }
+    
     function refresh()
     {
-        self.sendEvent("refresh");
+        self.event(self, "refresh");
         if (running) {
             setTimeout(refresh, refreshInterval);
         }
@@ -56,7 +71,7 @@ Game.Game = function(canvasElement, imageList) {
     
     function tick()
     {
-        self.sendEvent("tick");
+        self.event(self, "tick");
         if (running) {
             setTimeout(tick, tickInterval);
         }

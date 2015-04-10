@@ -17,12 +17,12 @@
             var x = 10;
             var y = 10;
             
-            game.receiveEvent("refresh", function() {
+            game.on(null, "refresh", function() {
                 game.context.clearRect(0, 0, game.canvas.width, game.canvas.height);
                 game.context.fillRect(x, y, 10, 10);
             });
             
-            game.receiveEvent("mouseDrag", function(e) {
+            game.on(null, "mouseDrag", function(sender, e) {
                 x = e.x;
                 y = e.y;
             });
