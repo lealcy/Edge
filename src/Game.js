@@ -14,19 +14,16 @@ Game.Game = function(canvasElement, imageList) {
     if (typeof Game.Mouse !== "undefined") {
         var mouse = new Game.Mouse(self);
     }
-    /*if (typeof Keyboard !== "undefined") { 
-        self.keyboard = new Keyboard(); // temporary
-    }*/
-    
+    if (typeof Game.Keyboard !== "undefined") { 
+        var keyboard = new Game.Keyboard(self);
+    }
     if (imageList.length && typeof Game.Images !== "undefined") {
         self.images = new Game.Images(self, imageList);
     }
 
     self.start = function() {
         if (imageList.length && typeof Game.Images !== "undefined") {
-            self.on(self, "imagesLoaded", function() {
-                start();
-            });
+            self.on(self, "imagesLoaded", function() { start(); });
         } else {
             start();
         }

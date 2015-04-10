@@ -10,21 +10,44 @@
         <script src='../src/Events.js'></script>
         <script src='../src/Images.js'></script>
         <script src='../src/Mouse.js'></script>
+        <script src='../src/Keyboard.js'></script>
+        <script src='../src/Actor.js'></script>
         <script>
             var images = {};
             var game = new Game.Game(document.querySelector("#canvas"), images);
+            var actor = new Game.Actor(game);
             
-            var x = 10;
-            var y = 10;
-            
-            game.on(null, "refresh", function() {
-                game.context.clearRect(0, 0, game.canvas.width, game.canvas.height);
-                game.context.fillRect(x, y, 10, 10);
+            actor.oldX = actor.x;
+            actor.oldY = actor.y;
+
+            actor.on("refresh", function(self) { 
+                game.context.clearRect(self.oldX, self.oldY, self.width, self.height);
+                game.context.fillRect(self.x, self.y, self.width, self.height); 
             });
             
-            game.on(null, "mouseDrag", function(sender, e) {
-                x = e.x;
-                y = e.y;
+            // Clear the old box position.
+            actor.on("keyDown", function(self) {  });
+            actor.on("keyDown" + Game.KEY_UP, function(self) { 
+                self.oldY = self.y;
+                self.y--; 
+            });
+            actor.on("keyDown" + Game.KEY_RIGHT, function(self) { 
+                self.oldX = self.x;
+                self.x++; 
+            });
+            actor.on("keyDown" + Game.KEY_DOWN, function(self) { 
+                self.oldY = self.y;
+                self.y++; 
+            });
+            actor.on("keyDown" + Game.KEY_LEFT, function(self) { 
+                self.oldX = self.x;
+                self.x--; 
+            });
+            actor.on("mouseDrag", function(self, e) {
+                self.oldX = self.x;
+                self.oldY = self.y
+                self.x = e.x;
+                self.y = e.y;
             });
             
             game.start();
