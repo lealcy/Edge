@@ -5,9 +5,9 @@ Game.Game = function(canvasElement, imageList) {
 
     self.canvas = canvasElement;
     self.context = canvasElement.getContext("2d"); // temporary
-
-    var tickInterval = 1000 / 15;
-    var refreshInterval = 1000 / 60;
+    self.tickInterval = 1000 / 15;
+    self.refreshInterval = 1000 / 60;
+    
     var running = false;
     var eventReceivers = {};
 
@@ -33,10 +33,16 @@ Game.Game = function(canvasElement, imageList) {
         if (!eventReceivers.hasOwnProperty(eventName)) {
             eventReceivers[eventName] = [];
         }
-        eventReceivers[eventName].push({
+        var eventId = eventReceivers[eventName].push({
             receiver: receiver, 
             callback: callback,
-        });
+        }) - 1;
+        
+        return { // eventHandler
+            clear: function() {
+                delete eventReceivers[eventName][eventId];
+            }
+        };
     };
     
     self.event = function(eventName, eventObj, sender) {
@@ -49,13 +55,18 @@ Game.Game = function(canvasElement, imageList) {
         return false;
     };
     
+    self.clearEvent = function(eventName) {
+        if (eventReceivers.hasOwnProperty(eventName)) {
+            delete eventReceivers[eventName];
+        }
+    };
+    
     function start()
     {
         running = true;
-        setTimeout(tick, tickInterval);
-        setTimeout(refresh, refreshInterval);
+        setTimeout(tick, self.tickInterval);
+        setTimeout(refresh, self.refreshInterval);
         self.event(self, "start");
-
     }
     
     function refresh()
@@ -63,7 +74,7 @@ Game.Game = function(canvasElement, imageList) {
         self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
         self.event("refresh");
         if (running) {
-            setTimeout(refresh, refreshInterval);
+            setTimeout(refresh, self.refreshInterval);
         }
     }
     
@@ -71,7 +82,7 @@ Game.Game = function(canvasElement, imageList) {
     {
         self.event("tick");
         if (running) {
-            setTimeout(tick, tickInterval);
+            setTimeout(tick, self.tickInterval);
         }
     }
 };
