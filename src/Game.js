@@ -34,21 +34,24 @@ Game.Game = function(canvasElement, imageList) {
             eventReceivers[eventName] = [];
         }
         var eventId = eventReceivers[eventName].push({
-            receiver: receiver, 
             callback: callback,
         }) - 1;
         
-        return { // eventHandler
+        eventReceivers[eventName][eventId].handler = {
+            callback: callback,
+            receiver: receiver,
             clear: function() {
                 delete eventReceivers[eventName][eventId];
-            }
+            },
         };
+        
+        return eventReceivers[eventName][eventId].handler;
     };
     
     self.event = function(eventName, eventObj, sender) {
         if (eventReceivers.hasOwnProperty(eventName)) {
             for (var i = 0, len = eventReceivers[eventName].length; i < len; i++) {
-                eventReceivers[eventName][i].callback(eventObj, sender);
+                eventReceivers[eventName][i].callback(eventObj, sender, eventReceivers[eventName][i].handler);
             }
             return true;
         }
@@ -86,5 +89,3 @@ Game.Game = function(canvasElement, imageList) {
         }
     }
 };
-
-
