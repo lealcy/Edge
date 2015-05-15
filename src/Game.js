@@ -55,7 +55,9 @@ Game.Game = function(canvasElement, imageList) {
     self.event = function(eventName, eventObj, sender) {
         if (eventReceivers.hasOwnProperty(eventName)) {
             for (var i = 0, len = eventReceivers[eventName].length; i < len; i++) {
-                eventReceivers[eventName][i].callback(eventObj, sender, eventReceivers[eventName][i].handler);
+                if (eventReceivers[eventName][i]) {
+                    eventReceivers[eventName][i].callback(eventObj, sender, eventReceivers[eventName][i].handler);
+                }
             }
             return true;
         }
