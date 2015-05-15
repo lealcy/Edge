@@ -3,6 +3,7 @@ var Game = Game || {};
 Game.Game = function(canvasElement, imageList) {
     var self = this;
 
+    self.debug = false;
     self.canvas = canvasElement;
     self.context = canvasElement.getContext("2d"); // temporary
     self.tickInterval = 1000 / 15;
@@ -17,6 +18,9 @@ Game.Game = function(canvasElement, imageList) {
     if (typeof Game.Keyboard !== "undefined") { 
         var keyboard = new Game.Keyboard(self);
     }
+    
+    var imageList = imageList || {};
+    
     if (imageList.length && typeof Game.Images !== "undefined") {
         self.images = new Game.Images(self, imageList);
     }
@@ -61,6 +65,12 @@ Game.Game = function(canvasElement, imageList) {
     self.clearEvent = function(eventName) {
         if (eventReceivers.hasOwnProperty(eventName)) {
             delete eventReceivers[eventName];
+        }
+    };
+    
+    self.log = function() {
+        if (self.debug) {
+            console.log(Array.prototype.slice.call(arguments));
         }
     };
     
