@@ -19,7 +19,7 @@ Game.Mouse = function(game) {
             x: e.offsetX === undefined ? e.originalEvent.layerX : e.offsetX,
             y: e.offsetY === undefined ? e.originalEvent.layerY : e.offsetY,
             wheelDirection: e.wheelDelta / 120,
-            originalEvent: e,
+            DOMMouseEvent: e,
         };
     }
     
@@ -38,9 +38,13 @@ Game.Mouse = function(game) {
     function onMouseDown(e)
     {
         e = processEvent(e);
-        initialEvent = e; // for the mouse drag
-        game.event("mouseDown", e);
         
+        // for the mouse drag
+        initialEvent = e;
+        initialEvent.dragX = e.x;
+        initialEvent.dragY = e.y;
+
+        game.event("mouseDown", e);
         return false;
     }
     
@@ -63,10 +67,7 @@ Game.Mouse = function(game) {
                         break;
                 }
             } else {
-                e.initialX = initialEvent.x;
-                e.initialY = initialEvent.y;
-                e.deltaX = Math.max(e.initialX, e.x) - Math.min(e.initialX, e.x);
-                e.deltaY = Math.max(e.initialY, e.y) - Math.min(e.initialY, e.y);
+                e.origin = initialEvent;
                 game.event("mouseEndDrag", e);
             }
         } else {
@@ -88,11 +89,10 @@ Game.Mouse = function(game) {
     {
         e = processEvent(e);
         if (initialEvent) {
-            e.initialX = initialEvent.x;
-            e.initialY = initialEvent.y;
-            e.deltaX = Math.max(e.initialX, e.x) - Math.min(e.initialX, e.x);
-            e.deltaY = Math.max(e.initialY, e.y) - Math.min(e.initialY, e.y);
+            e.origin = initialEvent;
             game.event("mouseDrag", e);
+            initialEvent.dragX = e.x;
+            initialEvent.dragY = e.y;
         };
         game.event("mouseMove", e);
         return false;
