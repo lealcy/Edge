@@ -1,27 +1,7 @@
 var Game = Game || {};
 
-Game.MouseEvent = function(e) {
-    var self = this;
-    
-    self.rawEvent = e;
-    self.wheelDirection = e.wheelDelta / 120;
-    self.button = e.button;
-    self.x = e.offsetX === undefined ? e.originalEvent.layerX : e.offsetX;
-    self.y = e.offsetY === undefined ? e.originalEvent.layerY : e.offsetY;
-    self.originX = 0;
-    self.originY = 0;
-};
-
 Game.Mouse = function(game) {
     var self = this;
-    
-    var isMouseDown = false;
-    var mouseButtonPressed = Game.MOUSE_NONE;
-    var mouseMoved = false;
-    var mouseOldX = 0;
-    var mouseOldY = 0;
-    var originX = 0;
-    var originY = 0;
     
     game.canvas.onmousedown = onMouseDown;
     game.canvas.onmouseup = onMouseUp;
@@ -30,92 +10,91 @@ Game.Mouse = function(game) {
     game.canvas.onmouseout = onMouseOut;
     game.canvas.oncontextmenu = function() { return false; };
     
+    var initialEvent = false;
     
-    function translateEventX(e) 
+    function processEvent(e)
     {
-        return e.offsetX === undefined ? 
-            e.originalEvent.layerX : e.offsetX;
-    }
-    
-    function translateEventY(e)
-    {
-        return e.offsetY === undefined ? 
-            e.originalEvent.layerY : e.offsetY;
+        return {
+            button: e.button,
+            x: e.offsetX === undefined ? e.originalEvent.layerX : e.offsetX,
+            y: e.offsetY === undefined ? e.originalEvent.layerY : e.offsetY,
+            wheelDirection: e.wheelDelta / 120,
+            originalEvent: e,
+        };
     }
     
     function onMouseWheel(e)
     {
-        var event = new Game.MouseEvent(e);
-        game.event("mouseWheel", event);
+        e = processEvent(e);
+        game.event("mouseWheel", e);
         if (event.wheelDirection == Game.MOUSE_WHEEL_UP) {
-            game.event("mouseWheelUp", event);
+            game.event("mouseWheelUp", e);
         } else if (event.wheelDirection == Game.MOUSE_WHEEL_DOWN) {
-            game.event("mouseWheelDown", event);
+            game.event("mouseWheelDown", e);
         }
         return false;
     }
     
     function onMouseDown(e)
     {
-        isMouseDown = true;
-        mouseMoved = false;
-        mouseButtonPressed = e.button;
-        mouseOldX = translateEventX(e) - originX;
-        mouseOldY = translateEventY(e) - originY;
+        e = processEvent(e);
+        initialEvent = e; // for the mouse drag
+        game.event("mouseDown", e);
+        
         return false;
     }
     
     function onMouseUp(e)
     {
-        if (!mouseMoved) {
-            var event = new Game.MouseEvent(e);
-            event.x -= originX;
-            event.y -= originY;
-            event.button = mouseButtonPressed;
-            game.event("mouseClick", event);
-            switch (mouseButtonPressed) {
-                case Game.MOUSE_LEFT:
-                    game.event("mouseLeftClick", event);
-                    break;
-                case Game.MOUSE_CENTER:
-                    game.event("mouseCenterClick", event);
-                    break;
-                case Game.MOUSE_RIGHT:
-                    game.event("mouseRightClick", event);
-                    break;
+        e = processEvent(e);
+        game.event("mouseUp", e);
+        if (initialEvent) {
+            if (initialEvent.x == e.x && initialEvent.y == e.y) { // Mouse didn't move
+                game.event("mouseClick", e);
+                switch (e.button) {
+                    case Game.MOUSE_LEFT: 
+                        game.event("mouseLeftClick", e); 
+                        break;
+                    case Game.MOUSE_CENTER: 
+                        game.event("MouseCenterClick", e); 
+                        break;
+                    case Game.MOUSE_RIGHT: 
+                        game.event("MouseRightClick", e); 
+                        break;
+                }
+            } else {
+                e.initialX = initialEvent.x;
+                e.initialY = initialEvent.y;
+                e.deltaX = Math.max(e.initialX, e.x) - Math.min(e.initialX, e.x);
+                e.deltaY = Math.max(e.initialY, e.y) - Math.min(e.initialY, e.y);
+                game.event("mouseEndDrag", e);
             }
+        } else {
+            game.log("mouseUp without mouseDown");
         }
-        mouseMoved = false;
-        isMouseDown = false;
-        mouseButtonPressed = Game.MOUSE_NONE;
+        initialEvent = false;
         return false;
     }
 
     function onMouseOut(e)
     {
-        onMouseUp(e);
+        game.event("mouseOut", processEvent(e));
+        if (initialEvent) {
+            onMouseUp(e);
+        }
     }
     
     function onMouseMove(e)
     {
-        var event = new Game.MouseEvent(e);
-        if (isMouseDown) {
-            mouseMoved = true;
-            originX = event.x - mouseOldX;
-            originY = event.y - mouseOldY;
-            event.originX = originX;
-            event.originY = originY;
-            event.button = mouseButtonPressed;
-            if (originX > 0) {
-                originX = 0;
-            }
-            if (originY > 0) {
-                originY = 0;
-            }
-            game.event("mouseDrag", event);
-        } else {
-            game.event("mouseMove", event);
-        }
+        e = processEvent(e);
+        if (initialEvent) {
+            e.initialX = initialEvent.x;
+            e.initialY = initialEvent.y;
+            e.deltaX = Math.max(e.initialX, e.x) - Math.min(e.initialX, e.x);
+            e.deltaY = Math.max(e.initialY, e.y) - Math.min(e.initialY, e.y);
+            game.event("mouseDrag", e);
+        };
+        game.event("mouseMove", e);
         return false;
     }
 };
