@@ -8,25 +8,25 @@ Game.Game = function(canvasElement, imageList) {
     self.context = canvasElement.getContext("2d"); // temporary
     self.tickInterval = 1000 / 15;
     self.refreshInterval = 1000 / 60;
-    
+
     var running = false;
     var eventReceivers = {};
 
     if (typeof Game.Mouse !== "undefined") {
         var mouse = new Game.Mouse(self);
     }
-    if (typeof Game.Keyboard !== "undefined") { 
+    if (typeof Game.Keyboard !== "undefined") {
         var keyboard = new Game.Keyboard(self);
     }
-    
+
     var imageList = imageList || {};
-    
+
     if (imageList.length && typeof Game.Images !== "undefined") {
         self.images = new Game.Images(self, imageList);
     }
 
     self.start = function() {
-        if (imageList.length && typeof Game.Images !== "undefined") {
+        if (typeof self.images !== "undefined") {
             self.on("imagesLoaded", function() { start(); });
         } else {
             start();
@@ -40,18 +40,19 @@ Game.Game = function(canvasElement, imageList) {
         var eventId = eventReceivers[eventName].push({
             callback: callback,
         }) - 1;
-        
+
         eventReceivers[eventName][eventId].handler = {
+            name: eventName,
             callback: callback,
             receiver: receiver,
             clear: function() {
                 delete eventReceivers[eventName][eventId];
             },
         };
-        
+
         return eventReceivers[eventName][eventId].handler;
     };
-    
+
     self.event = function(eventName, eventObj, sender) {
         if (eventReceivers.hasOwnProperty(eventName)) {
             for (var i = 0, len = eventReceivers[eventName].length; i < len; i++) {
@@ -63,19 +64,19 @@ Game.Game = function(canvasElement, imageList) {
         }
         return false;
     };
-    
+
     self.clearEvent = function(eventName) {
         if (eventReceivers.hasOwnProperty(eventName)) {
             delete eventReceivers[eventName];
         }
     };
-    
+
     self.log = function() {
         if (self.debug) {
             console.log(Array.prototype.slice.call(arguments));
         }
     };
-    
+
     function start()
     {
         running = true;
@@ -83,7 +84,7 @@ Game.Game = function(canvasElement, imageList) {
         setTimeout(refresh, self.refreshInterval);
         self.event(self, "start");
     }
-    
+
     function refresh()
     {
         self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
@@ -92,7 +93,7 @@ Game.Game = function(canvasElement, imageList) {
             setTimeout(refresh, self.refreshInterval);
         }
     }
-    
+
     function tick()
     {
         self.event("tick");
