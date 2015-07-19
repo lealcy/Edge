@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang='en'>
+    <head>
+        <meta charset='UTF-8' />
+        <title>tile engine</title>
+    </head>
+    <body>
+        <canvas id='canvas' width='640' height='480'></canvas>
+        <script src='../src/Game.js'></script>
+        <script src='../src/Mouse.js'></script>
+        <script>
+            var game = new Game.Game(document.querySelector("#canvas"));
+            var mouse = new Game.Mouse(game);
+
+            game.on("mouse.wheel", function(e) {
+                console.log("mouse wheel has been rolled.");
+            });
+
+            game.on("mouse.wheelUp", function(e) {
+                console.log("mouse wheel has been rolled up.");
+            });
+
+            game.on("mouse.wheelDown", function(e) {
+                console.log("mouse whell has been rolled down.");
+            });
+
+            game.on("mouse.down", function(e) {
+                console.log("mouse down at (" + e.x + "," + e.y + ").");
+            });
+
+            game.on("mouse.up", function(e) {
+                console.log("mouse up.");
+            });
+
+            game.on("mouse.click", function(e) {
+                console.log("mouse click at (" + e.x + "," + e.y + ").");
+            });
+
+            game.on("mouse.leftClick", function(e) {
+                console.log("left click at (" + e.x + "," + e.y + ").");
+            });
+
+            game.on("mouse.centerClick", function(e) {
+                console.log("center click at (" + e.x + "," + e.y + ").");
+            });
+
+            game.on("mouse.rightClick", function(e) {
+                console.log("right click at (" + e.x + "," + e.y + ").");
+            });
+
+            game.on("mouse.out", function(e) {
+                console.log("mouse left the canvas area.");
+            });
+
+            game.on("mouse.move", function(e) {
+                console.log("mouse moved at (" + e.x + "," + e.y + ").");
+            });
+
+            game.on("mouse.contextMenu", function(e) {
+                console.log("mouse invoked a context menu at (" + e.x + "," +
+                    e.y + ").");
+            });
+
+            game.on("mouse.drag", function(e) {
+                console.log("mouse dragged from (" + e.origin.x + "," +
+                    e.origin.y + ") to (" + e.x + "," + e.y + ").");
+            });
+
+            game.on("mouse.endDrag", function(e) {
+                console.log("mouse drag ended from (" + e.origin.x + "," +
+                    e.origin.y + ") to (" + e.x + "," + e.y + ").");
+            });
+
+
+
+
+
+
+        </script>
+    </body>
+</html>

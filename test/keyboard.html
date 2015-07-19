@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang='en'>
+    <head>
+        <meta charset='UTF-8' />
+        <title>tile engine</title>
+    </head>
+    <body>
+        <canvas id='canvas' width='640' height='480'></canvas>
+        <script src='../src/Game.js'></script>
+        <script src='../src/Keyboard.js'></script>
+        <script>
+            var game = new Game.Game(document.querySelector("#canvas"));
+            var kbd = new Game.Keyboard(game); // Initialize the Keyboard
+
+            // Capture all keys
+            game.on("keyboard.keyDown", function(e) {
+                console.log("You pressed: " + e.keyCode);
+            });
+
+            // Capture a particular key
+            game.on("keyboard.keyDown" + Game.KEY_ENTER, function(e) {
+                console.log("You pressed the <ENTER> key.");
+            });
+
+            // Capture key releases (may not appear)
+            game.on("keyboard.keyUp", function(e) {
+                console.log("You released the key: " + e.keyCode);
+            });
+
+            // Capture Key presses
+            game.on("keyboard.keyPress", function(e) {
+                console.log("Key pressed: " + e.keyCode);
+            });
+
+        </script>
+    </body>
+</html>

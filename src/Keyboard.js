@@ -2,18 +2,50 @@ var Game = Game || {};
 
 Game.Keyboard = function(game) {
     var self = this;
-     
+
+    self.ignoredKeys = [Game.KEY_F5]; // Keys to be send to the Browser.
+    self.ignoreInput = false;
+
     game.canvas.tabIndex = 1; // Force canvas to be a "focusable" object.
     game.canvas.style.outline = "none"; // Disable the focus outline.
     game.canvas.addEventListener("keydown", onKeyDown, false);
+    game.canvas.addEventListener("keyup", onKeyUp, false);
+    game.canvas.addEventListener("keypress", onKeyPress, false);
     game.canvas.focus();
-    
+
     function onKeyDown(e)
     {
-        e.preventDefault();
-        game.event("keyDown", e.keyCode);
-        game.event("keyDown" + e.keyCode, e.keyCode);
-        return false;
+        if (!self.ignoreInput && self.ignoredKeys.indexOf(e.keyCode) === -1) {
+            e.preventDefault();
+            game.event("keyboard.keyDown", {keyCode: e.keyCode}, self);
+            game.event("keyboard.keyDown" + e.keyCode,
+                {keyCode: e.keyCode}, self);
+            return false;
+        }
+        return true;
+    }
+
+    function onKeyUp(e)
+    {
+        if (!self.ignoreInput && self.ignoredKeys.indexOf(e.keyCode) === -1) {
+            e.preventDefault();
+            game.event("keyboard.keyUp", {keyCode: e.keyCode}, self);
+            game.event("keyboard.keyUp" + e.keyCode,
+                {keyCode: e.keyCode}, self);
+            return false;
+        }
+    }
+
+    function onKeyPress(e)
+    {
+        if (!self.ignoreInput && self.ignoredKeys.indexOf(e.keyCode) === -1) {
+            e.preventDefault();
+            game.event("keyboard.keyPress", {keyCode: e.keyCode}, self);
+            game.event("keyboard.keyPress" + e.keyCode,
+                {keyCode: e.keyCode}, self);
+            return false;
+        }
+        return true;
     }
 };
 
@@ -49,7 +81,7 @@ Game.KEY_9 = 57;
 Game.KEY_A = 65;
 Game.KEY_B = 66;
 Game.KEY_C = 67;
-Game.KEY_D = 68;    
+Game.KEY_D = 68;
 Game.KEY_E = 69;
 Game.KEY_F = 70;
 Game.KEY_G = 71;
@@ -82,7 +114,7 @@ Game.KEY_NUMPAD_3 = 99;
 Game.KEY_NUMPAD_4 = 100;
 Game.KEY_NUMPAD_5 = 101;
 Game.KEY_NUMPAD_6 = 102;
-Game.KEY_NUMPAD_7 = 103;    
+Game.KEY_NUMPAD_7 = 103;
 Game.KEY_NUMPAD_8 = 104;
 Game.KEY_NUMPAD_9 = 105;
 Game.KEY_MULTIPLY = 106;

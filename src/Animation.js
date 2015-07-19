@@ -4,15 +4,15 @@ Game.Animation = {};
 
 Game.Animation.Move = function(game, fromX, fromY, toX, toY, duration, callback) {
     var self = this;
-    
+
     var steps = Math.round(duration / game.refreshInterval);
     if (steps < 1) {
         steps = 1;
     }
     var movementX = Game.Animation.getDelta(fromX, toX) / steps;
     var movementY = Game.Animation.getDelta(fromY, toY) / steps;
-    
-    game.on("refresh", function(e, sender, eventHandler) {
+
+    game.on("game.refresh", function(e, sender, eventHandler) {
         if (steps--) {
             fromX = Math.min(fromX, toX) + movementX;
             fromY = Math.min(fromY, toY) + movementY;
@@ -22,7 +22,7 @@ Game.Animation.Move = function(game, fromX, fromY, toX, toY, duration, callback)
             callback(toX, toY);
             eventHandler.clear();
         }
-    });
+    }, self);
 };
 
 Game.Animation.getDelta = function (n1, n2) {

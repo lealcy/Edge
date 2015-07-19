@@ -1,6 +1,6 @@
 var Game = Game || {};
 
-Game.Game = function(canvasElement, imageList) {
+Game.Game = function(canvasElement) {
     var self = this;
 
     self.debug = false;
@@ -12,25 +12,11 @@ Game.Game = function(canvasElement, imageList) {
     var running = false;
     var eventReceivers = {};
 
-    if (typeof Game.Mouse !== "undefined") {
-        var mouse = new Game.Mouse(self);
-    }
-    if (typeof Game.Keyboard !== "undefined") {
-        var keyboard = new Game.Keyboard(self);
-    }
-
-    var imageList = imageList || {};
-
-    if (imageList.length && typeof Game.Images !== "undefined") {
-        self.images = new Game.Images(self, imageList);
-    }
-
     self.start = function() {
-        if (typeof self.images !== "undefined") {
-            self.on("imagesLoaded", function() { start(); });
-        } else {
-            start();
-        }
+        running = true;
+        setTimeout(tick, self.tickInterval);
+        setTimeout(refresh, self.refreshInterval);
+        self.event("game.start", self, self);
     };
 
     self.on = function(eventName, callback, receiver) {
@@ -55,9 +41,12 @@ Game.Game = function(canvasElement, imageList) {
 
     self.event = function(eventName, eventObj, sender) {
         if (eventReceivers.hasOwnProperty(eventName)) {
-            for (var i = 0, len = eventReceivers[eventName].length; i < len; i++) {
+            for (var i = 0, len = eventReceivers[eventName].length;
+                i < len; i++) {
                 if (eventReceivers[eventName][i]) {
-                    eventReceivers[eventName][i].callback(eventObj, sender, eventReceivers[eventName][i].handler);
+                    eventReceivers[eventName][i].callback(
+                        eventObj, sender, eventReceivers[eventName][i].handler
+                    );
                 }
             }
             return true;
@@ -77,18 +66,10 @@ Game.Game = function(canvasElement, imageList) {
         }
     };
 
-    function start()
-    {
-        running = true;
-        setTimeout(tick, self.tickInterval);
-        setTimeout(refresh, self.refreshInterval);
-        self.event(self, "start");
-    }
-
     function refresh()
     {
         self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
-        self.event("refresh");
+        self.event("game.refresh", self, self);
         if (running) {
             setTimeout(refresh, self.refreshInterval);
         }
@@ -96,7 +77,7 @@ Game.Game = function(canvasElement, imageList) {
 
     function tick()
     {
-        self.event("tick");
+        self.event("game.tick", self, self);
         if (running) {
             setTimeout(tick, self.tickInterval);
         }

@@ -2,16 +2,18 @@ var Game = Game || {};
 
 Game.Mouse = function(game) {
     var self = this;
-    
+
+    self.ignoreInput = false;
+
     game.canvas.onmousedown = onMouseDown;
     game.canvas.onmouseup = onMouseUp;
     game.canvas.onmousemove = onMouseMove;
     game.canvas.onmousewheel = onMouseWheel;
     game.canvas.onmouseout = onMouseOut;
-    game.canvas.oncontextmenu = function() { return false; };
-    
+    game.canvas.oncontextmenu = onContextMenu;
+
     var initialEvent = false;
-    
+
     function processEvent(e)
     {
         return {
@@ -22,80 +24,98 @@ Game.Mouse = function(game) {
             DOMMouseEvent: e,
         };
     }
-    
+
     function onMouseWheel(e)
     {
-        e = processEvent(e);
-        game.event("mouseWheel", e);
-        if (event.wheelDirection == Game.MOUSE_WHEEL_UP) {
-            game.event("mouseWheelUp", e);
-        } else if (event.wheelDirection == Game.MOUSE_WHEEL_DOWN) {
-            game.event("mouseWheelDown", e);
+        if (!self.ignoreInput) {
+            e = processEvent(e);
+            game.event("mouse.wheel", e, self);
+            if (event.wheelDirection == Game.MOUSE_WHEEL_UP) {
+                game.event("mouse.wheelUp", e, self);
+            } else if (event.wheelDirection == Game.MOUSE_WHEEL_DOWN) {
+                game.event("mouse.wheelDown", e, self);
+            }
+            return false;
         }
-        return false;
     }
-    
+
     function onMouseDown(e)
     {
-        e = processEvent(e);
-        
-        // for the mouse drag
-        initialEvent = e;
-        initialEvent.dragX = e.x;
-        initialEvent.dragY = e.y;
+        if (!self.ignoreInput) {
+            e = processEvent(e);
 
-        game.event("mouseDown", e);
-        return false;
+            // for the mouse drag
+            initialEvent = e;
+            initialEvent.dragX = e.x;
+            initialEvent.dragY = e.y;
+
+            game.event("mouse.down", e, self);
+            return false;
+        }
     }
-    
+
     function onMouseUp(e)
     {
-        e = processEvent(e);
-        game.event("mouseUp", e);
-        if (initialEvent) {
-            if (initialEvent.x == e.x && initialEvent.y == e.y) { // Mouse didn't move
-                game.event("mouseClick", e);
-                switch (e.button) {
-                    case Game.MOUSE_LEFT: 
-                        game.event("mouseLeftClick", e); 
-                        break;
-                    case Game.MOUSE_CENTER: 
-                        game.event("MouseCenterClick", e); 
-                        break;
-                    case Game.MOUSE_RIGHT: 
-                        game.event("MouseRightClick", e); 
-                        break;
+        if (!self.ignoreInput) {
+            e = processEvent(e);
+            game.event("mouse.up", e, self);
+            if (initialEvent) {
+                if (initialEvent.x == e.x && initialEvent.y == e.y) { // didn't move
+                    game.event("mouse.click", e, self);
+                    switch (e.button) {
+                        case Game.MOUSE_LEFT:
+                            game.event("mouse.leftClick", e, self);
+                            break;
+                        case Game.MOUSE_CENTER:
+                            game.event("mouse.centerClick", e, self);
+                            break;
+                        case Game.MOUSE_RIGHT:
+                            game.event("mouse.rightClick", e, self);
+                            break;
+                    }
+                } else {
+                    e.origin = initialEvent;
+                    game.event("mouse.endDrag", e, self);
                 }
             } else {
-                e.origin = initialEvent;
-                game.event("mouseEndDrag", e);
+                game.log("mouseUp without mouseDown");
             }
-        } else {
-            game.log("mouseUp without mouseDown");
+            initialEvent = false;
+            return false;
         }
-        initialEvent = false;
-        return false;
     }
 
     function onMouseOut(e)
     {
-        game.event("mouseOut", processEvent(e));
-        if (initialEvent) {
-            onMouseUp(e);
+        if (!self.ignoreInput) {
+            game.event("mouse.out", processEvent(e), self);
+            if (initialEvent) {
+                onMouseUp(e);
+            }
         }
     }
-    
+
     function onMouseMove(e)
     {
-        e = processEvent(e);
-        if (initialEvent) {
-            e.origin = initialEvent;
-            game.event("mouseDrag", e);
-            initialEvent.dragX = e.x;
-            initialEvent.dragY = e.y;
-        };
-        game.event("mouseMove", e);
-        return false;
+        if (!self.ignoreInput) {
+            e = processEvent(e);
+            if (initialEvent) {
+                e.origin = initialEvent;
+                game.event("mouse.drag", e, self);
+                initialEvent.dragX = e.x;
+                initialEvent.dragY = e.y;
+            };
+            game.event("mouse.move", e, self);
+            return false;
+        }
+    }
+
+    function onContextMenu(e)
+    {
+        if (!self.ignoreInput) {
+            game.event("mouse.contextMenu", processEvent(e), self);
+            return false;
+        }
     }
 };
 
