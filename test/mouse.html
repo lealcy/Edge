@@ -22,7 +22,7 @@
             });
 
             game.on("mouse.wheelDown", function(e) {
-                console.log("mouse whell has been rolled down.");
+                console.log("mouse wheel has been rolled down.");
             });
 
             game.on("mouse.down", function(e) {
@@ -60,6 +60,10 @@
             game.on("mouse.contextMenu", function(e) {
                 console.log("mouse invoked a context menu at (" + e.x + "," +
                     e.y + ").");
+            });
+
+            game.on("mouse.beginDrag", function(e) {
+                console.log("mouse drag started at (" + e.x + "," + e.y + ").");
             });
 
             game.on("mouse.drag", function(e) {

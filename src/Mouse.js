@@ -49,6 +49,7 @@ Game.Mouse = function(game) {
             initialEvent = e;
             initialEvent.dragX = e.x;
             initialEvent.dragY = e.y;
+            initialEvent.beginDrag = true;
 
             game.event("mouse.down", e, self);
             return false;
@@ -102,6 +103,10 @@ Game.Mouse = function(game) {
             e = processEvent(e);
             if (initialEvent) {
                 e.origin = initialEvent;
+                if (initialEvent.beginDrag) {
+                    game.event("mouse.beginDrag", e, self);
+                    initialEvent.beginDrag = false;
+                }
                 game.event("mouse.drag", e, self);
                 initialEvent.dragX = e.x;
                 initialEvent.dragY = e.y;
