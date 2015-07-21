@@ -4,6 +4,7 @@ Game.Mouse = function(game) {
     var self = this;
 
     self.ignoreInput = false;
+    self.noMoveEventOnDrag = false; // Disable mouse.move events when dragging
 
     game.canvas.onmousedown = onMouseDown;
     game.canvas.onmouseup = onMouseUp;
@@ -104,6 +105,9 @@ Game.Mouse = function(game) {
                 game.event("mouse.drag", e, self);
                 initialEvent.dragX = e.x;
                 initialEvent.dragY = e.y;
+                if (self.noMoveEventOnDrag) {
+                    return false;
+                }
             };
             game.event("mouse.move", e, self);
             return false;
