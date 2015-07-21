@@ -1,9 +1,11 @@
 var Game = Game || {};
 
+Game.debug = false;
+Game.debugLevel = 1;
+
 Game.Game = function(canvasElement) {
     var self = this;
 
-    self.debug = false;
     self.canvas = canvasElement;
     self.context = canvasElement.getContext("2d"); // temporary
     self.tickInterval = 1000 / 15;
@@ -60,12 +62,6 @@ Game.Game = function(canvasElement) {
         }
     };
 
-    self.log = function() {
-        if (self.debug) {
-            console.log(Array.prototype.slice.call(arguments));
-        }
-    };
-
     function refresh()
     {
         self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
@@ -81,5 +77,11 @@ Game.Game = function(canvasElement) {
         if (running) {
             setTimeout(tick, self.tickInterval);
         }
+    }
+};
+
+Game.log = function() {
+    if (Game.debug && arguments[0] <= Game.debugLevel) {
+        console.log(Array.prototype.slice.call(arguments, 1));
     }
 };
