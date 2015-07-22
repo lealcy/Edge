@@ -2,15 +2,15 @@
 <html lang='en'>
     <head>
         <meta charset='UTF-8' />
-        <title>tile engine</title>
+        <title>Edge Mouse Example</title>
     </head>
     <body>
         <canvas id='canvas' width='640' height='480'></canvas>
         <script src='../src/Game.js'></script>
         <script src='../src/Mouse.js'></script>
         <script>
-            var game = new Game.Game(document.querySelector("#canvas"));
-            var mouse = new Game.Mouse(game);
+            var game = new Edge.Game(document.querySelector("#canvas"));
+            var mouse = new Edge.Mouse(game);
             mouse.noMoveEventOnDrag = true;
 
             game.on("mouse.wheel", function(e) {

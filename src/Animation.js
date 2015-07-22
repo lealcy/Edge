@@ -1,16 +1,16 @@
-var Game = Game || {};
+var Edge = Edge || {};
 
-Game.Animation = {};
+Edge.Animation = {};
 
-Game.Animation.Move = function(game, fromX, fromY, toX, toY, duration, callback) {
+Edge.Animation.Move = function(game, fromX, fromY, toX, toY, duration, callback) {
     var self = this;
 
     var steps = Math.round(duration / game.refreshInterval);
     if (steps < 1) {
         steps = 1;
     }
-    var movementX = Game.Animation.getDelta(fromX, toX) / steps;
-    var movementY = Game.Animation.getDelta(fromY, toY) / steps;
+    var movementX = Edge.Animation.getDelta(fromX, toX) / steps;
+    var movementY = Edge.Animation.getDelta(fromY, toY) / steps;
 
     game.on("game.refresh", function(e, sender, eventHandler) {
         if (steps--) {
@@ -25,6 +25,6 @@ Game.Animation.Move = function(game, fromX, fromY, toX, toY, duration, callback)
     }, self);
 };
 
-Game.Animation.getDelta = function (n1, n2) {
+Edge.Animation.getDelta = function (n1, n2) {
     return Math.max(n1, n2) - Math.min(n1, n2);
 };

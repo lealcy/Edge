@@ -1,6 +1,6 @@
-var Game = Game || {};
+var Edge = Edge || {};
 
-Game.Images = function(game, images){
+Edge.Images = function(game, images){
     var self = this;
 
     var loadedImages = {};

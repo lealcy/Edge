@@ -1,6 +1,6 @@
-var Game = Game || {};
+var Edge = Edge || {};
 
-Game.Scene = function(game) {
+Edge.Scene = function(game) {
     var self = this;
 
     var entities = [];

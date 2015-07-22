@@ -1,6 +1,6 @@
-var Game = Game || {};
+var Edge = Edge || {};
 
-Game.Entity = function(x, y, layer, isVisible, image) {
+Edge.Entity = function(x, y, layer, isVisible, image) {
         var self = this;
 
         self.isVisible = isVisible || true;
@@ -8,7 +8,7 @@ Game.Entity = function(x, y, layer, isVisible, image) {
         self.y = y || 0;
         self.image = image || null;
         self.layer = layer || 0;
-        
+
         self.onRefresh = function() {};
 
 

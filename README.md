@@ -1,2 +1,2 @@
-# jsGameEngine
-JS Simple Game Engine
+# jsEdge
+JavaScript Event Driven Game Engine

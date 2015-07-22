@@ -1,6 +1,6 @@
-var Game = Game || {};
+var Edge = Edge || {};
 
-Game.Mouse = function(game) {
+Edge.Mouse = function(game) {
     var self = this;
 
     self.ignoreInput = false;
@@ -31,9 +31,9 @@ Game.Mouse = function(game) {
         if (!self.ignoreInput) {
             e = processEvent(e);
             game.event("mouse.wheel", e, self);
-            if (event.wheelDirection == Game.MOUSE_WHEEL_UP) {
+            if (event.wheelDirection == Edge.MOUSE_WHEEL_UP) {
                 game.event("mouse.wheelUp", e, self);
-            } else if (event.wheelDirection == Game.MOUSE_WHEEL_DOWN) {
+            } else if (event.wheelDirection == Edge.MOUSE_WHEEL_DOWN) {
                 game.event("mouse.wheelDown", e, self);
             }
             return false;
@@ -65,13 +65,13 @@ Game.Mouse = function(game) {
                 if (initialEvent.x == e.x && initialEvent.y == e.y) { // didn't move
                     game.event("mouse.click", e, self);
                     switch (e.button) {
-                        case Game.MOUSE_LEFT:
+                        case Edge.MOUSE_LEFT:
                             game.event("mouse.leftClick", e, self);
                             break;
-                        case Game.MOUSE_CENTER:
+                        case Edge.MOUSE_CENTER:
                             game.event("mouse.centerClick", e, self);
                             break;
-                        case Game.MOUSE_RIGHT:
+                        case Edge.MOUSE_RIGHT:
                             game.event("mouse.rightClick", e, self);
                             break;
                     }
@@ -128,10 +128,10 @@ Game.Mouse = function(game) {
     }
 };
 
-Game.MOUSE_NONE = -1;
-Game.MOUSE_LEFT = 0;
-Game.MOUSE_CENTER = 1;
-Game.MOUSE_RIGHT = 2;
-Game.MOUSE_WHEEL_UP = 1;
-Game.MOUSE_WHEEL_DOWN = -1;
-Game.MOUSE_WHEEL_NONE = 0;
+Edge.MOUSE_NONE = -1;
+Edge.MOUSE_LEFT = 0;
+Edge.MOUSE_CENTER = 1;
+Edge.MOUSE_RIGHT = 2;
+Edge.MOUSE_WHEEL_UP = 1;
+Edge.MOUSE_WHEEL_DOWN = -1;
+Edge.MOUSE_WHEEL_NONE = 0;
