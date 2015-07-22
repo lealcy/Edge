@@ -4,34 +4,31 @@
         <meta charset='UTF-8' />
         <title>Edge Keyboard Example</title>
     </head>
-    <body>
+    <body onload="init()">
         <canvas id='canvas' width='640' height='480'></canvas>
         <script src='../src/Game.js'></script>
         <script src='../src/Keyboard.js'></script>
         <script>
-            var game = new Edge.Game(document.querySelector("#canvas"));
-            var kbd = new Edge.Keyboard(game); // Initialize the Keyboard
+            function init()
+            {
+                var game = new Edge.Game(document.querySelector("#canvas"));
+                var kbd = new Edge.Keyboard(game); // Initialize the Keyboard
 
-            // Capture all keys
-            game.on("keyboard.keyDown", function(e) {
-                console.log("You pressed: " + e.keyCode);
-            });
+                // Capture all keys
+                game.on("keyboard.keyDown", function(e) {
+                    console.log("You pressed: " + e.keyCode);
+                });
 
-            // Capture a particular key
-            game.on("keyboard.keyDown" + Edge.KEY_ENTER, function(e) {
-                console.log("You pressed the <ENTER> key.");
-            });
+                // Capture a particular key
+                game.on("keyboard.keyDown" + Edge.KEY_ENTER, function(e) {
+                    console.log("You pressed the <ENTER> key.");
+                });
 
-            // Capture key releases (may not appear)
-            game.on("keyboard.keyUp", function(e) {
-                console.log("You released the key: " + e.keyCode);
-            });
-
-            // Capture Key presses
-            game.on("keyboard.keyPress", function(e) {
-                console.log("Key pressed: " + e.keyCode);
-            });
-
+                // Capture key releases (may not appear)
+                game.on("keyboard.keyUp", function(e) {
+                    console.log("You released the key: " + e.keyCode);
+                });
+            }
         </script>
     </body>
 </html>
