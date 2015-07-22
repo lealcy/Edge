@@ -3,14 +3,16 @@ var Edge = Edge || {};
 Edge.Keyboard = function(game) {
     var self = this;
 
-    self.ignoredKeys = [Edge.KEY_F5]; // Keys to be send to the Browser.
+    // Keys to be send to the Browser.
+    self.ignoredKeys = [Edge.KEY_F5, Edge.KEY_F12];
+
+    // Disable keyboard events altogether.
     self.ignoreInput = false;
 
     game.canvas.tabIndex = 1; // Force canvas to be a "focusable" object.
     game.canvas.style.outline = "none"; // Disable the focus outline.
     game.canvas.addEventListener("keydown", onKeyDown, false);
     game.canvas.addEventListener("keyup", onKeyUp, false);
-    game.canvas.addEventListener("keypress", onKeyPress, false);
     game.canvas.focus();
 
     function onKeyDown(e)
@@ -34,18 +36,6 @@ Edge.Keyboard = function(game) {
                 {keyCode: e.keyCode}, self);
             return false;
         }
-    }
-
-    function onKeyPress(e)
-    {
-        if (!self.ignoreInput && self.ignoredKeys.indexOf(e.keyCode) === -1) {
-            e.preventDefault();
-            game.event("keyboard.keyPress", {keyCode: e.keyCode}, self);
-            game.event("keyboard.keyPress" + e.keyCode,
-                {keyCode: e.keyCode}, self);
-            return false;
-        }
-        return true;
     }
 };
 
