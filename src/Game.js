@@ -1,9 +1,9 @@
-var Game = Game || {};
+var Edge = Edge || {};
 
-Game.debug = false;
-Game.debugLevel = 1;
+Edge.debug = false; 
+Edge.debugLevel = 1;
 
-Game.Game = function(canvasElement) {
+Edge.Game = function(canvasElement) {
     var self = this;
 
     self.canvas = canvasElement;
@@ -80,8 +80,8 @@ Game.Game = function(canvasElement) {
     }
 };
 
-Game.log = function() {
-    if (Game.debug && arguments[0] <= Game.debugLevel) {
+Edge.log = function() {
+    if (Edge.debug && arguments[0] <= Edge.debugLevel) {
         console.log(Array.prototype.slice.call(arguments, 1));
     }
 };
