@@ -2,15 +2,15 @@
 <html lang='en'>
     <head>
         <meta charset='UTF-8' />
-        <title>tile engine</title>
+        <title>Edge Keyboard Example</title>
     </head>
     <body>
         <canvas id='canvas' width='640' height='480'></canvas>
         <script src='../src/Game.js'></script>
         <script src='../src/Keyboard.js'></script>
         <script>
-            var game = new Game.Game(document.querySelector("#canvas"));
-            var kbd = new Game.Keyboard(game); // Initialize the Keyboard
+            var game = new Edge.Game(document.querySelector("#canvas"));
+            var kbd = new Edge.Keyboard(game); // Initialize the Keyboard
 
             // Capture all keys
             game.on("keyboard.keyDown", function(e) {
@@ -18,7 +18,7 @@
             });
 
             // Capture a particular key
-            game.on("keyboard.keyDown" + Game.KEY_ENTER, function(e) {
+            game.on("keyboard.keyDown" + Edge.KEY_ENTER, function(e) {
                 console.log("You pressed the <ENTER> key.");
             });
 
