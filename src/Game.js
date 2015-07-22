@@ -10,6 +10,7 @@ Edge.Game = function(canvasElement) {
     self.context = canvasElement.getContext("2d"); // temporary
     self.tickInterval = 1000 / 15;
     self.refreshInterval = 1000 / 60;
+    self.clearBeforeRefresh = true;
 
     var running = false;
     var eventReceivers = {};
@@ -63,7 +64,9 @@ Edge.Game = function(canvasElement) {
 
     function refresh()
     {
-        self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
+        if (self.clearBeforeRefresh) {
+            self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
+        }
         self.event("game.refresh", self, self);
         if (running) {
             setTimeout(refresh, self.refreshInterval);
