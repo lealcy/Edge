@@ -1,6 +1,6 @@
 var Edge = Edge || {};
 
-Edge.debug = false; 
+Edge.debug = false;
 Edge.debugLevel = 1;
 
 Edge.Game = function(canvasElement) {
@@ -46,9 +46,8 @@ Edge.Game = function(canvasElement) {
             for (var i = 0, len = eventReceivers[eventName].length;
                 i < len; i++) {
                 if (eventReceivers[eventName][i]) {
-                    eventReceivers[eventName][i].callback(
-                        eventObj, sender, eventReceivers[eventName][i].handler
-                    );
+                    eventReceivers[eventName][i].callback(eventObj, sender,
+                        eventReceivers[eventName][i].handler);
                 }
             }
             return true;
