@@ -1,13 +1,13 @@
 var Edge = Edge || {};
 
-Edge.Entity = function(x, y, layer, isVisible, image) {
+Edge.Entity = function(x, y, z, isVisible, image) {
         var self = this;
 
-        self.isVisible = isVisible || true;
         self.x = x || 0;
         self.y = y || 0;
+        self.z = z || 0;
+        self.isVisible = isVisible || true;
         self.image = image || null;
-        self.layer = layer || 0;
 
         self.onRefresh = function() {};
 

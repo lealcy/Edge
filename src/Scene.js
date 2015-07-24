@@ -17,13 +17,15 @@ Edge.Scene = function(game) {
     };
 
     self.stop = function() {
-        refreshEvent.clear();
-        refreshEvent = null;
+        if (refreshEvent !== null) {
+            refreshEvent.clear();
+            refreshEvent = null;
+        }
     };
 
     function render()
     {
-        entities.sort(function(a, b) { return a.layer - b.layer; });
+        entities.sort(function(a, b) { return a.z - b.z; });
         for (var i = 0, j = entities.length; i < j; i++) {
             if (!entities[i].isVisible) {
                 continue;
@@ -35,6 +37,5 @@ Edge.Scene = function(game) {
             entity.onRefresh();
         }
     }
-
 
 };
