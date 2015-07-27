@@ -31,9 +31,9 @@ Edge.Mouse = function(game) {
         if (!self.ignoreInput) {
             e = processEvent(e);
             game.event("mouse.wheel", e, self);
-            if (event.wheelDirection == Edge.MOUSE_WHEEL_UP) {
+            if (event.wheelDirection == Edge.MouseButtons.WHEEL_UP) {
                 game.event("mouse.wheelUp", e, self);
-            } else if (event.wheelDirection == Edge.MOUSE_WHEEL_DOWN) {
+            } else if (event.wheelDirection == Edge.MouseButtons.WHEEL_DOWN) {
                 game.event("mouse.wheelDown", e, self);
             }
             return false;
@@ -65,13 +65,13 @@ Edge.Mouse = function(game) {
                 if (initialEvent.x == e.x && initialEvent.y == e.y) { // didn't move
                     game.event("mouse.click", e, self);
                     switch (e.button) {
-                        case Edge.MOUSE_LEFT:
+                        case Edge.MouseButtons.LEFT:
                             game.event("mouse.leftClick", e, self);
                             break;
-                        case Edge.MOUSE_CENTER:
+                        case Edge.MouseButtons.CENTER:
                             game.event("mouse.centerClick", e, self);
                             break;
-                        case Edge.MOUSE_RIGHT:
+                        case Edge.MouseButtons.RIGHT:
                             game.event("mouse.rightClick", e, self);
                             break;
                     }
@@ -128,10 +128,12 @@ Edge.Mouse = function(game) {
     }
 };
 
-Edge.MOUSE_NONE = -1;
-Edge.MOUSE_LEFT = 0;
-Edge.MOUSE_CENTER = 1;
-Edge.MOUSE_RIGHT = 2;
-Edge.MOUSE_WHEEL_UP = 1;
-Edge.MOUSE_WHEEL_DOWN = -1;
-Edge.MOUSE_WHEEL_NONE = 0;
+Edge.MouseButtons = {
+    NONE: -1,
+    LEFT: 0,
+    CENTER: 1,
+    RIGHT: 2,
+    WHEEL_UP: 1,
+    WHEEL_DOWN: -1,
+    WHEEL_NONE: 0
+};

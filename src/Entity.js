@@ -9,7 +9,7 @@ Edge.Entity = function(x, y, z, isVisible, image) {
         self.isVisible = isVisible || true;
         self.image = image || null;
 
-        self.onRefresh = function() {};
+        self.onRefresh = function(scene) {};
 
 
 };

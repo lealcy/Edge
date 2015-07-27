@@ -34,7 +34,7 @@ Edge.Scene = function(game) {
             if (entity.image) {
                 game.context.drawImage(entity.image, entity.x, entity.y);
             }
-            entity.onRefresh();
+            entity.onRefresh(self);
         }
     }
 
