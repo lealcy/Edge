@@ -3,16 +3,20 @@ var Edge = Edge || {};
 Edge.Scene = function(game) {
     var self = this;
 
-    var entities = [];
+    var layers = [];
     var refreshEvent = null;
 
-    self.addEntity = function(entity) {
-        entities.push(entity);
+    self.addEntity = function(entity, layer) {
+        layer = layer || 0;
+        if (layers[layer] === undefined) {
+            layers[layer] = [];
+        }
+        layers[layer].push(entity);
     };
 
     self.start = function() {
         if (refreshEvent === null) {
-            refreshEvent = game.on("game.refresh", render, self);
+            refreshEvent = game.on("game.refresh", refresh, self);
         }
     };
 
@@ -23,18 +27,14 @@ Edge.Scene = function(game) {
         }
     };
 
-    function render()
+    function refresh()
     {
-        entities.sort(function(a, b) { return a.z - b.z; });
-        for (var i = 0, j = entities.length; i < j; i++) {
-            if (!entities[i].isVisible) {
-                continue;
+        for (var i = 0, j = layers.length; i < j; i++) {
+            for (var k = 0, w = layers[i].length; k < w; k++) {
+                if (layers[i][k].isVisible) {
+                    layers[i][k].refresh(self);
+                }
             }
-            var entity = entities[i];
-            if (entity.image) {
-                game.context.drawImage(entity.image, entity.x, entity.y);
-            }
-            entity.onRefresh(self);
         }
     }
 
