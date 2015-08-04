@@ -113,7 +113,7 @@ Edge.Mouse = function(game) {
                 if (self.noMoveEventOnDrag) {
                     return false;
                 }
-            };
+            }
             game.event("mouse.move", e, self);
             return false;
         }
