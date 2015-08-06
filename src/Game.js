@@ -12,16 +12,25 @@ Edge.Game = function(canvasElement) {
     self.refreshInterval = 1000 / 60;
     self.clearBeforeRefresh = true;
     self.focusOnStart = true;
+    self.refreshCount = 0;
+    self.tickCount = 0;
 
     var running = false;
     var eventReceivers = {};
 
+    var requestAnimFrame = window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        function(callback) {
+            setTimeout(callback, self.refreshInterval);
+        };
+
     self.start = function() {
         running = true;
-        
+
         game.canvas.tabIndex = 1; // Force canvas to be a "focusable" object.
         game.canvas.style.outline = "none"; // Disable the focus outline.
-        
+
         if (self.focusOnStart) {
            game.canvas.focus();
         }
@@ -30,16 +39,16 @@ Edge.Game = function(canvasElement) {
         setTimeout(refresh, self.refreshInterval);
         self.event("game.start", self, self);
     };
-    
+
     self.stop = function() {
         game.event("game.stop", self, self);
         running = false;
     };
-    
+
     self.isRunning = function() {
         return running;
     };
-    
+
     self.on = function(eventName, callback, receiver) {
         if (!eventReceivers.hasOwnProperty(eventName)) {
             eventReceivers[eventName] = [];
@@ -80,22 +89,31 @@ Edge.Game = function(canvasElement) {
         }
     };
 
+    var requestAnimFrame = window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        function(callback) {
+            setTimeout(callback, self.refreshInterval);
+        };
+
     function refresh()
     {
-        if (self.clearBeforeRefresh) {
-            self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
-        }
-        self.event("game.refresh", self, self);
         if (running) {
-            setTimeout(refresh, self.refreshInterval);
+            requestAnimFrame(refresh);
+            if (self.clearBeforeRefresh) {
+                self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
+            }
+            self.event("game.refresh", self, self);
+            self.refreshCount++;
         }
     }
 
     function tick()
     {
-        self.event("game.tick", self, self);
         if (running) {
             setTimeout(tick, self.tickInterval);
+            self.event("game.tick", self, self);
+            self.tickCount++;
         }
     }
 };
