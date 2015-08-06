@@ -89,13 +89,6 @@ Edge.Game = function(canvasElement) {
         }
     };
 
-    var requestAnimFrame = window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        function(callback) {
-            setTimeout(callback, self.refreshInterval);
-        };
-
     function refresh()
     {
         if (running) {
