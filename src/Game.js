@@ -94,7 +94,8 @@ Edge.Game = function(canvasElement) {
         if (running) {
             requestAnimFrame(refresh);
             if (self.clearBeforeRefresh) {
-                self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
+                self.context.clearRect(0, 0, self.canvas.width,
+                    self.canvas.height);
             }
             self.event("game.refresh", self, self);
             self.refreshCount++;
