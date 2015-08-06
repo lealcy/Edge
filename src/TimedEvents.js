@@ -3,22 +3,22 @@ var Edge = Edge || {};
 Edge.After = function(game, delay, eventName, eventObj, sender) {
     var self = this;
 
-    var timer = setTimeout(function() {
+    function event()
+    {
         game.event(eventName, eventObj, sender);
-    }, delay);
+    }
+
+    var timer = setTimeout(event, delay);
 
     self.reset = function(newDelay) {
         clearTimeout(timer);
         delay = newDelay || delay;
-        timer = setTimeout(function() {
-            game.event(eventName, eventObj, sender);
-        }, delay);
-
+        timer = setTimeout(event, delay);
     };
 
     self.now = function() {
         clearTimeout(timer);
-        game.event(eventName, eventObj, sender);
+        event();
     };
 
     self.stop = function() {
@@ -26,14 +26,27 @@ Edge.After = function(game, delay, eventName, eventObj, sender) {
     };
 };
 
-Edge.Every = function(game, interval, eventName, eventObj, sender) {
+Edge.Every = function(game, interval, eventName, eventObj, sender, stopEvent) {
     var self = this;
-
     var timer = null;
 
+    if (typeof stopEvent !== "undefined") {
+        game.on(stopEvent, function() {
+            self.stop();
+        }, self);
+    }
+
+    function event()
+    {
+        game.event(eventName, eventObj, sender);
+    }
+
     function iterate() {
+        if (timer) {
+            clearTimeout(timer);
+        }
         timer = setTimeout(function() {
-            game.event(eventName, eventObj, sender);
+            event();
             iterate();
         }, interval);
     }
@@ -59,7 +72,7 @@ Edge.Every = function(game, interval, eventName, eventObj, sender) {
     };
 
     self.now = function() {
-        game.event(eventName, eventObj, sender);
+        event();
     };
 
     iterate();
