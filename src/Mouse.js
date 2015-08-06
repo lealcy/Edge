@@ -6,12 +6,32 @@ Edge.Mouse = function(game) {
     self.ignoreInput = false;
     self.noMoveEventOnDrag = false; // Disable mouse.move events when dragging
 
-    game.canvas.onmousedown = onMouseDown;
-    game.canvas.onmouseup = onMouseUp;
-    game.canvas.onmousemove = onMouseMove;
-    game.canvas.onmousewheel = onMouseWheel;
-    game.canvas.onmouseout = onMouseOut;
-    game.canvas.oncontextmenu = onContextMenu;
+    if (game.isRunning()) {
+        start();
+    }
+
+    game.on("game.start", start, self);
+    game.on("game.stop", stop, self);
+
+    function start()
+    {
+        game.canvas.onmousedown = onMouseDown;
+        game.canvas.onmouseup = onMouseUp;
+        game.canvas.onmousemove = onMouseMove;
+        game.canvas.onmousewheel = onMouseWheel;
+        game.canvas.onmouseout = onMouseOut;
+        game.canvas.oncontextmenu = onContextMenu;
+    }
+
+    function stop()
+    {
+        game.canvas.onmousedown = function() {};
+        game.canvas.onmouseup = function() {};
+        game.canvas.onmousemove = function() {};
+        game.canvas.onmousewheel = function() {};
+        game.canvas.onmouseout = function() {};
+        game.canvas.oncontextmenu = function() {};
+    }
 
     var initialEvent = false;
 

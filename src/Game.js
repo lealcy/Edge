@@ -11,17 +11,35 @@ Edge.Game = function(canvasElement) {
     self.tickInterval = 1000 / 15;
     self.refreshInterval = 1000 / 60;
     self.clearBeforeRefresh = true;
+    self.focusOnStart = true;
 
     var running = false;
     var eventReceivers = {};
 
     self.start = function() {
         running = true;
+        
+        game.canvas.tabIndex = 1; // Force canvas to be a "focusable" object.
+        game.canvas.style.outline = "none"; // Disable the focus outline.
+        
+        if (self.focusOnStart) {
+           game.canvas.focus();
+        }
+
         setTimeout(tick, self.tickInterval);
         setTimeout(refresh, self.refreshInterval);
         self.event("game.start", self, self);
     };
-
+    
+    self.stop = function() {
+        game.event("game.stop", self, self);
+        running = false;
+    };
+    
+    self.isRunning = function() {
+        return running;
+    };
+    
     self.on = function(eventName, callback, receiver) {
         if (!eventReceivers.hasOwnProperty(eventName)) {
             eventReceivers[eventName] = [];
@@ -43,7 +61,7 @@ Edge.Game = function(canvasElement) {
     };
 
     self.event = function(eventName, eventObj, sender) {
-        if (eventReceivers.hasOwnProperty(eventName)) {
+        if (running && eventReceivers.hasOwnProperty(eventName)) {
             for (var i = 0, len = eventReceivers[eventName].length;
                 i < len; i++) {
                 if (eventReceivers[eventName][i]) {
