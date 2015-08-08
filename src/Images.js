@@ -2,9 +2,37 @@ var Edge = Edge || {};
 
 Edge.Images = function(game, images) {
     var self = this;
+    var alreadyStarted = false;
 
-    var loadedImages = {};
-    var imagesLoaded = 0;
+    game.on("game.start", start, self);
+
+    self.get = function(name) {
+        if (loadedImages.hasOwnProperty(name)) {
+            return loadedImages[name];
+        }
+    };
+
+
+    function start()
+    {
+        if (!alreadyStarted) {
+            alreadyStarted = true;
+            var loadedImages = {};
+            var imagesLoaded = 0;
+            if (!images.length) {
+                game.event("images.allImagesLoaded", imagesLoaded);
+                return;
+            }
+            for (var name in images) {
+                if (images.hasOwnProperty(name)) {
+                    var img = new Image();
+                    loadedImages[name] = img;
+                    img.onload = imageOnLoadEvent;
+                    img.src = images[name];
+                }
+            }
+        }
+    }
 
     function imageOnLoadEvent(e, name)
     {
@@ -14,24 +42,4 @@ Edge.Images = function(game, images) {
             game.event("images.allImagesLoaded", {total: imagesLoaded}, self);
         }
     }
-
-    if (!images.length) {
-        game.event("images.allImagesLoaded", imagesLoaded);
-    } else {
-
-        for (var name in images) {
-            if (images.hasOwnProperty(name)) {
-                var img = new Image();
-                loadedImages[name] = img;
-                img.onload = imageOnLoadEvent;
-                img.src = images[name];
-            }
-        }
-    }
-
-    self.get = function(name) {
-        if (loadedImages.hasOwnProperty(name)) {
-            return loadedImages[name];
-        }
-    };
 };

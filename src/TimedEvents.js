@@ -3,11 +3,6 @@ var Edge = Edge || {};
 Edge.After = function(game, delay, eventName, eventObj, sender) {
     var self = this;
 
-    function event()
-    {
-        game.event(eventName, eventObj, sender);
-    }
-
     var timer = setTimeout(event, delay);
 
     self.reset = function(newDelay) {
@@ -24,6 +19,11 @@ Edge.After = function(game, delay, eventName, eventObj, sender) {
     self.stop = function() {
         clearTimeout(timer);
     };
+
+    function event()
+    {
+        game.event(eventName, eventObj, sender);
+    }
 };
 
 Edge.Every = function(game, interval, eventName, eventObj, sender, stopEvent) {
@@ -35,6 +35,30 @@ Edge.Every = function(game, interval, eventName, eventObj, sender, stopEvent) {
             self.stop();
         }, self);
     }
+
+    self.start = function() {
+        if (!timer) {
+            iterate();
+        }
+    };
+
+    self.reset = function() {
+        self.stop();
+        self.start();
+    };
+
+    self.stop = function() {
+        clearTimeout(timer);
+        timer = null;
+    };
+
+    self.changeInterval = function(newInterval) {
+        interval = newInterval;
+    };
+
+    self.now = function() {
+        event();
+    };
 
     function event()
     {
@@ -50,30 +74,6 @@ Edge.Every = function(game, interval, eventName, eventObj, sender, stopEvent) {
             iterate();
         }, interval);
     }
-
-    self.start = function() {
-        if (!timer) {
-            iterate();
-        }
-    };
-
-    self.reset = function() {
-        self.stop();
-        self.start();
-    };
-
-    self.stop = function () {
-        clearTimeout(timer);
-        timer = null;
-    };
-
-    self.changeInterval = function(newInterval) {
-        interval = newInterval;
-    };
-
-    self.now = function() {
-        event();
-    };
 
     iterate();
 };

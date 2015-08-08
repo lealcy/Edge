@@ -6,6 +6,15 @@ Edge.debugLevel = 1;
 Edge.Game = function(canvasElement) {
     var self = this;
 
+    var running = false;
+    var eventReceivers = {};
+    var requestAnimFrame = window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        function(callback) {
+            setTimeout(callback, self.refreshInterval);
+        };
+
     self.canvas = canvasElement;
     self.context = canvasElement.getContext("2d"); // temporary
     self.tickInterval = 1000 / 15;
@@ -15,28 +24,15 @@ Edge.Game = function(canvasElement) {
     self.refreshCount = 0;
     self.tickCount = 0;
 
-    var running = false;
-    var eventReceivers = {};
-
-    var requestAnimFrame = window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        function(callback) {
-            setTimeout(callback, self.refreshInterval);
-        };
-
     self.start = function() {
         running = true;
-
         game.canvas.tabIndex = 1; // Force canvas to be a "focusable" object.
         game.canvas.style.outline = "none"; // Disable the focus outline.
-
         if (self.focusOnStart) {
            game.canvas.focus();
         }
-
-        setTimeout(tick, self.tickInterval);
-        setTimeout(refresh, self.refreshInterval);
+        tick();
+        refresh();
         self.event("game.start", self, self);
     };
 
@@ -56,7 +52,6 @@ Edge.Game = function(canvasElement) {
         var eventId = eventReceivers[eventName].push({
             callback: callback,
         }) - 1;
-
         eventReceivers[eventName][eventId].handler = {
             name: eventName,
             callback: callback,
@@ -65,7 +60,6 @@ Edge.Game = function(canvasElement) {
                 delete eventReceivers[eventName][eventId];
             },
         };
-
         return eventReceivers[eventName][eventId].handler;
     };
 

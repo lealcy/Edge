@@ -7,7 +7,6 @@ Edge.Keyboard = function(game) {
 
     // Keys to be sent to the Browser.
     self.ignoredKeys = [Edge.Keys.F5, Edge.Keys.F12];
-
     // Disable keyboard events altogether.
     self.ignoreInput = false;
 
